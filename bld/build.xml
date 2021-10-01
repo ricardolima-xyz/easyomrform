@@ -1,0 +1,59 @@
+<project name="omgomr" default="dist" basedir=".">
+	<description>
+        simple example build file
+    </description>
+	<!-- set global properties for this build -->
+	<property name="src" location="../src" />
+	<property name="lib.dir" location="../lib" />
+	<property name="res.dir" location="../resources" />
+	<property name="dist" location="../out" />
+	<property name="build" location="../tmp" />
+
+	<target name="init">
+		<tstamp />
+		<delete dir="${build}"/>
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+		<javac srcdir="${src}" destdir="${build}">
+			<classpath>
+				<fileset dir="${lib.dir}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile" description="generate the distribution">
+		<mkdir dir="${dist}/${DSTAMP}" />
+
+		<copy todir="${dist}/${DSTAMP}/libraries">
+			<fileset dir="${lib.dir}" />
+		</copy>
+
+		<copy todir="${dist}/${DSTAMP}/resources">
+			<fileset dir="${res.dir}" />
+		</copy>
+
+		<path id="build-classpath">
+			<fileset dir="${dist}/${DSTAMP}/libraries">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+
+		<manifestclasspath property="lib.list" jarfile="${dist}/${DSTAMP}/omgomr-${DSTAMP}.jar">
+			<classpath refid="build-classpath" />
+		</manifestclasspath>
+
+		<jar jarfile="${dist}/${DSTAMP}/opticalbot-${DSTAMP}.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Main-Class" value="net.sf.opticalbot.Main" />
+				<attribute name="Class-Path" value="${lib.list}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+</project>
