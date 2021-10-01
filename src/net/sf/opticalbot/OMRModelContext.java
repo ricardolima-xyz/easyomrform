@@ -24,10 +24,8 @@ public class OMRModelContext {
 
 	public OMRModelContext() {
 		this.settings = new Settings();
-		String lang = settings
-				.getProperty(Settings.LANG, Settings.DEFAULT_LANG);
+		String lang = settings.get(Settings.Setting.Language);
 		Dictionary.setDictionaryLanguage(lang);
-
 	}
 
 	public HashMap<String, Double> calcDelta(int rows, int values,

@@ -163,7 +163,8 @@ public class UIMain extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JRadioButtonMenuItem object = (JRadioButtonMenuItem) e.getSource();
-			model.getSettings().setProperty(Settings.LANG, object.getName());
+			model.getSettings().set(Settings.Setting.Language, object.getName());
+			//model.getSettings().setProperty(Settings.LANG, object.getName());
 			model.getSettings().store();
 			JOptionPane.showMessageDialog(null,
 					Dictionary.translate("language.changed.message"),
@@ -193,7 +194,7 @@ public class UIMain extends JFrame {
 		JMenuItem mniAbout = new JMenuItem(Dictionary.translate("about"));
 		mniAbout.addActionListener(actAbout);
 		mniAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1,
-				InputEvent.ALT_MASK));
+				InputEvent.ALT_DOWN_MASK));
 
 		JMenu mnuHelp = new JMenu(Dictionary.translate("help.menu"));
 		mnuHelp.setMnemonic(Dictionary.mnemonic("help.menu.mnemonic"));
@@ -204,14 +205,14 @@ public class UIMain extends JFrame {
 		mniNew.addActionListener(actNew);
 		mniNew.setMnemonic(Dictionary.mnemonic("create.template.mnemonic"));
 		mniNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-				InputEvent.CTRL_MASK));
+				InputEvent.CTRL_DOWN_MASK));
 
 		JMenuItem mniOpen = new JMenuItem(
 				Dictionary.translate("DICT Open model..."));
 		mniOpen.addActionListener(actOpen);
 		mniOpen.setMnemonic(Dictionary.mnemonic("load.template.mnemonic"));
 		mniOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
-				InputEvent.CTRL_MASK));
+				InputEvent.CTRL_DOWN_MASK));
 		
 		JMenuItem mniSave = new JMenuItem(
 				Dictionary.translate("DICT Save model"));
@@ -225,7 +226,7 @@ public class UIMain extends JFrame {
 		mniExit.addActionListener(actExit);
 		mniExit.setMnemonic(Dictionary.mnemonic("exit.mnemonic"));
 		mniExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
-				InputEvent.CTRL_MASK));
+				InputEvent.CTRL_DOWN_MASK));
 
 		JMenu mnuFile = new JMenu(Dictionary.translate("file.menu"));
 		mnuFile.setMnemonic(Dictionary.mnemonic("file.menu.mnemonic"));
@@ -237,8 +238,7 @@ public class UIMain extends JFrame {
 		mnuFile.add(new JSeparator(JSeparator.HORIZONTAL));
 		mnuFile.add(mniExit);
 
-		String language = model.getSettings().getProperty(Settings.LANG,
-				Settings.DEFAULT_LANG);
+		String language = model.getSettings().get(Settings.Setting.Language);
 		JMenu menuBuilder = new JMenu(Dictionary.translate("language"));
 		JRadioButtonMenuItem languageItem;
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -258,7 +258,7 @@ public class UIMain extends JFrame {
 		JMenuItem mniOptions = new JMenuItem(Dictionary.translate("options"));
 		mniOptions.addActionListener(actOptions);
 		mniOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
-				InputEvent.CTRL_MASK));
+				InputEvent.CTRL_DOWN_MASK));
 
 		JMenu mnuSettings = new JMenu(Dictionary.translate("settings.menu"));
 		mnuSettings.setMnemonic(Dictionary.mnemonic("settings.menu.mnemonic"));

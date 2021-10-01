@@ -1,4 +1,4 @@
-<project name="omgomr" default="dist" basedir=".">
+<project name="opticalbot" default="dist" basedir=".">
 	<description>
         simple example build file
     </description>

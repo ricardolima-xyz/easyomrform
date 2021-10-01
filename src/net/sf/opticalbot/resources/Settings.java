@@ -18,11 +18,13 @@ public class Settings extends Properties {
 	public static int MAX_SHAPESIZE = 200;
 	public static int MIN_SHAPESIZE = 1;
 
-	// TODO USE this enum instead of the constants.
+	// TODO Use this enum instead of the constants.
 	public enum Setting {
-		Language("lang", "en"), Threshold("threshold", "127"), Density(
-				"density", "60"), ShapeSize("shape.size", "60"), Shape(
-				"shape.type", ShapeType.CIRCLE.name());
+		Language("lang", "en"),
+		Threshold("threshold", "127"),
+		Density("density", "60"),
+		ShapeSize("shape.size", "60"),
+		Shape("shape.type", ShapeType.CIRCLE.name());
 
 		private final String key;
 		private final String defaultValue;
@@ -90,12 +92,11 @@ public class Settings extends Properties {
 	}
 
 	public String get(Setting setting) {
-		return null;
-		// TODO implement
+		return super.getProperty(setting.getKey(), setting.getDefaultValue());
 	}
 
 	public void set(Setting setting, String value) {
-		// TODO implement
+		super.setProperty(setting.getKey(), value);
 	}
 
 	// TODO After removing all deprecated usages from code, remove these
