@@ -25,7 +25,7 @@ import net.sf.opticalbot.omr.exception.OMRModelSaveException;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Resources;
 import net.sf.opticalbot.resources.ResourcesKeys;
-import net.sf.opticalbot.ui.utilities.JOutlookBar;
+import net.sf.opticalbot.ui.utilities.JSildeBar;
 import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
 public class UIOMRModel extends JPanel {
@@ -157,7 +157,7 @@ public class UIOMRModel extends JPanel {
 		pnlFieldList.add(pnlFieldsOptions, BorderLayout.NORTH);
 
 		// pnlModel.add(pnlFieldList, BorderLayout.WEST);
-		JOutlookBar jobToolbar = new JOutlookBar();
+		JSildeBar jobToolbar = new JSildeBar();
 		jobToolbar.addBar("DICT Fields", pnlFieldList);
 		// TODO ADD Corner buttons here
 		jobToolbar.addBar("DICT Corners", new JPanel());

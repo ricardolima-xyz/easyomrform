@@ -1,9 +1,7 @@
 package net.sf.opticalbot.ui.utilities;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -13,28 +11,26 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- * A JOutlookBar provides a component that is similar to a JTabbedPane, but
+ * A JSildeBar provides a component that is similar to a JTabbedPane, but
  * instead of maintaining tabs, it uses Outlook-style bars to control the
  * visible component
  */
-public class JOutlookBar extends JPanel implements ActionListener {
+public class JSildeBar extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The top panel: contains the buttons displayed on the top of the
-	 * JOutlookBar
+	 * JSildeBar
 	 */
 	private JPanel topPanel = new JPanel(new GridLayout(1, 1));
 
 	/**
 	 * The bottom panel: contains the buttons displayed on the bottom of the
-	 * JOutlookBar
+	 * JSildeBar
 	 */
 	private JPanel bottomPanel = new JPanel(new GridLayout(1, 1));
 
@@ -55,17 +51,17 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	private JComponent visibleComponent = null;
 
 	/**
-	 * Creates a new JOutlookBar; after which you should make repeated calls to
+	 * Creates a new JSildeBar; after which you should make repeated calls to
 	 * addBar() for each bar
 	 */
-	public JOutlookBar() {
+	public JSildeBar() {
 		this.setLayout(new BorderLayout());
 		this.add(topPanel, BorderLayout.NORTH);
 		this.add(bottomPanel, BorderLayout.SOUTH);
 	}
 
 	/**
-	 * Adds the specified component to the JOutlookBar and sets the bar's name
+	 * Adds the specified component to the JSildeBar and sets the bar's name
 	 * 
 	 * @param name
 	 *            The name of the outlook bar
@@ -80,7 +76,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Adds the specified component to the JOutlookBar and sets the bar's name
+	 * Adds the specified component to the JSildeBar and sets the bar's name
 	 * 
 	 * @param name
 	 *            The name of the outlook bar
@@ -97,7 +93,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Removes the specified bar from the JOutlookBar
+	 * Removes the specified bar from the JSildeBar
 	 * 
 	 * @param name
 	 *            The name of the bar to remove
@@ -202,36 +198,6 @@ public class JOutlookBar extends JPanel implements ActionListener {
 			}
 			currentBar++;
 		}
-	}
-
-	/**
-	 * Debug, dummy method
-	 */
-	public static JPanel getDummyPanel(String name) {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(name, JLabel.CENTER));
-		return panel;
-	}
-
-	/**
-	 * Debug test...
-	 */
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("JOutlookBar Test");
-		JOutlookBar outlookBar = new JOutlookBar();
-		outlookBar.addBar("One", getDummyPanel("One"));
-		outlookBar.addBar("Two", getDummyPanel("Two"));
-		outlookBar.addBar("Three", getDummyPanel("Three"));
-		outlookBar.addBar("Four", getDummyPanel("Four"));
-		outlookBar.addBar("Five", getDummyPanel("Five"));
-		outlookBar.setVisibleBar(2);
-		frame.getContentPane().add(outlookBar);
-
-		frame.setSize(800, 600);
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(d.width / 2 - 400, d.height / 2 - 300);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	/**
