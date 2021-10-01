@@ -17,6 +17,8 @@ import net.sf.opticalbot.omr.exception.UnsupportedImageException;
 import net.sf.opticalbot.resources.Dictionary;
 
 public class OMRModel {
+	private static final int DEFAULT_WIDTH = 600;
+	private static final int DEFAULT_HEIGHT = 800;
 
 	private static final int BLACK = 0;
 	private static final int HALF_WINDOW_SIZE = 5;
@@ -39,6 +41,10 @@ public class OMRModel {
 
 	public OMRModel() {
 		this.corners = new HashMap<Corner, FormPoint>();
+		this.corners.put(Corner.TOP_LEFT, new FormPoint(0, 0));
+		this.corners.put(Corner.TOP_RIGHT, new FormPoint(DEFAULT_WIDTH, 0));
+		this.corners.put(Corner.BOTTOM_LEFT, new FormPoint(0, DEFAULT_HEIGHT));
+		this.corners.put(Corner.BOTTOM_RIGHT, new FormPoint(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		this.fields = new LinkedList<FormField>();
 		this.pointList = new ArrayList<FormPoint>();
 	}

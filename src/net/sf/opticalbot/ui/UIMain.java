@@ -71,8 +71,21 @@ public class UIMain extends JFrame {
 		}
 	};
 
-	/** Action for new template */
+	/** Action for new model */
 	public final ActionListener actNew = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			OMRModel omrModel = new OMRModel();
+			model.setTemplate(omrModel);
+			instance.omrModel = omrModel;
+			UIOMRModel uiOMRModel = new UIOMRModel(model, instance);
+			addUIOMRModel(uiOMRModel);
+		}
+	};
+
+	/** Action for new template */
+	// TODO Deprecated object
+	public final ActionListener actNewOld = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			UIFileChooser flc = new UIFileChooser();
@@ -94,15 +107,11 @@ public class UIMain extends JFrame {
 					UIOMRModel uiOMRModel = new UIOMRModel(model, instance);
 					addUIOMRModel(uiOMRModel);
 				} catch (IOException e1) {
-					JOptionPane.showMessageDialog(null,
-							Dictionary.translate("io.error"),
-							Dictionary.translate("io.error.popup.title"),
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, Dictionary.translate("io.error"),
+							Dictionary.translate("io.error.popup.title"), JOptionPane.ERROR_MESSAGE);
 				} catch (UnsupportedImageException e2) {
-					JOptionPane.showMessageDialog(null, Dictionary
-							.translate("DICT error.unsupported.image.type"),
-							Dictionary.translate("DICT error.popup.title"),
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, Dictionary.translate("DICT error.unsupported.image.type"),
+							Dictionary.translate("DICT error.popup.title"), JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -166,10 +175,8 @@ public class UIMain extends JFrame {
 			JRadioButtonMenuItem object = (JRadioButtonMenuItem) e.getSource();
 			model.getSettings().set(Settings.Setting.Language, object.getName());
 			model.getSettings().store();
-			JOptionPane.showMessageDialog(null,
-					Dictionary.translate("language.changed.message"),
-					Dictionary.translate("settings.popup.title"),
-					JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, Dictionary.translate("language.changed.message"),
+					Dictionary.translate("settings.popup.title"), JOptionPane.INFORMATION_MESSAGE);
 		}
 	};
 
@@ -185,16 +192,14 @@ public class UIMain extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 
-		// Creating menu bar (start)
-
+		// Menu bar (start)
 		JMenuItem mniHelp = new JMenuItem(Dictionary.translate("help"));
 		mniHelp.addActionListener(actHelp);
 		mniHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 
 		JMenuItem mniAbout = new JMenuItem(Dictionary.translate("about"));
 		mniAbout.addActionListener(actAbout);
-		mniAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1,
-				InputEvent.ALT_DOWN_MASK));
+		mniAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, InputEvent.ALT_DOWN_MASK));
 
 		JMenu mnuHelp = new JMenu(Dictionary.translate("help.menu"));
 		mnuHelp.setMnemonic(Dictionary.mnemonic("help.menu.mnemonic"));
@@ -204,33 +209,33 @@ public class UIMain extends JFrame {
 		JMenuItem mniNew = new JMenuItem(Dictionary.translate("DICT New model"));
 		mniNew.addActionListener(actNew);
 		mniNew.setMnemonic(Dictionary.mnemonic("create.template.mnemonic"));
-		mniNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-				InputEvent.CTRL_DOWN_MASK));
+		mniNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
 
-		JMenuItem mniOpen = new JMenuItem(
-				Dictionary.translate("DICT Open model..."));
+		JMenuItem mniNewOld = new JMenuItem(Dictionary.translate("NEW - DELETE ME"));
+		mniNewOld.addActionListener(actNewOld);
+		mniNewOld.setMnemonic(Dictionary.mnemonic("create.template.mnemonic"));
+		mniNewOld.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK));
+
+		JMenuItem mniOpen = new JMenuItem(Dictionary.translate("DICT Open model..."));
 		mniOpen.addActionListener(actOpen);
 		mniOpen.setMnemonic(Dictionary.mnemonic("load.template.mnemonic"));
-		mniOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
-				InputEvent.CTRL_DOWN_MASK));
-		
-		JMenuItem mniSave = new JMenuItem(
-				Dictionary.translate("DICT Save model"));
+		mniOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
+
+		JMenuItem mniSave = new JMenuItem(Dictionary.translate("DICT Save model"));
 		mniSave.addActionListener(actSave);
 
-		JMenuItem mniSaveAs = new JMenuItem(
-				Dictionary.translate("DICT Save model as..."));
+		JMenuItem mniSaveAs = new JMenuItem(Dictionary.translate("DICT Save model as..."));
 		mniSaveAs.addActionListener(actSaveAs);
 
 		JMenuItem mniExit = new JMenuItem(Dictionary.translate("exit"));
 		mniExit.addActionListener(actExit);
 		mniExit.setMnemonic(Dictionary.mnemonic("exit.mnemonic"));
-		mniExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
-				InputEvent.CTRL_DOWN_MASK));
+		mniExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
 
 		JMenu mnuFile = new JMenu(Dictionary.translate("file.menu"));
 		mnuFile.setMnemonic(Dictionary.mnemonic("file.menu.mnemonic"));
 		mnuFile.add(mniNew);
+		mnuFile.add(mniNewOld);
 		mnuFile.add(mniOpen);
 		mnuFile.add(new JSeparator(JSeparator.HORIZONTAL));
 		mnuFile.add(mniSave);
@@ -243,8 +248,7 @@ public class UIMain extends JFrame {
 		JRadioButtonMenuItem languageItem;
 		ButtonGroup buttonGroup = new ButtonGroup();
 		for (String l : Languages.getAvailableLanguages()) {
-			languageItem = new JRadioButtonMenuItem(
-					Dictionary.translate("language." + l));
+			languageItem = new JRadioButtonMenuItem(Dictionary.translate("language." + l));
 			if (l.equals(language)) {
 				languageItem.setSelected(true);
 			}
@@ -257,8 +261,7 @@ public class UIMain extends JFrame {
 
 		JMenuItem mniOptions = new JMenuItem(Dictionary.translate("options"));
 		mniOptions.addActionListener(actOptions);
-		mniOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
-				InputEvent.CTRL_DOWN_MASK));
+		mniOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, InputEvent.CTRL_DOWN_MASK));
 
 		JMenu mnuSettings = new JMenu(Dictionary.translate("settings.menu"));
 		mnuSettings.setMnemonic(Dictionary.mnemonic("settings.menu.mnemonic"));
@@ -270,7 +273,7 @@ public class UIMain extends JFrame {
 		mnbMain.add(mnuSettings);
 		mnbMain.add(mnuHelp);
 		setJMenuBar(mnbMain);
-		// Creating menu bar (end)
+		// Menu bar (end)
 
 	}
 
@@ -280,9 +283,9 @@ public class UIMain extends JFrame {
 	}
 
 	/**
-	 * This method adds an UIOMRModel (the main user interface for OMR Models)
-	 * to the main window. If there is another UIOMRModel on the main window,
-	 * this method removes the current ui before adding the new one.
+	 * This method adds an UIOMRModel (the main user interface for OMR Models) to
+	 * the main window. If there is another UIOMRModel on the main window, this
+	 * method removes the current ui before adding the new one.
 	 */
 	private void addUIOMRModel(UIOMRModel newUIOMRModel) {
 		if (this.uiOMRModel != null)
