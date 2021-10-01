@@ -28,6 +28,7 @@ import net.sf.opticalbot.omr.exception.UnsupportedImageException;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Languages;
 import net.sf.opticalbot.resources.Settings;
+import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.ErrorDialog;
 import net.sf.opticalbot.ui.utilities.Hyperlink;
 import net.sf.opticalbot.ui.utilities.HyperlinkException;
@@ -82,8 +83,8 @@ public class UIMain extends JFrame {
 				File imageFile = flc.getSelectedFile();
 
 				try {
-					int threshold = model.getSettings().getThreshold();
-					int density = model.getSettings().getDensity();
+					int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
+					int density = Integer.valueOf(model.getSettings().get(Setting.Density));
 
 					OMRModel omrModel = new OMRModel(imageFile);
 					omrModel.findCorners(threshold, density);
@@ -164,7 +165,6 @@ public class UIMain extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			JRadioButtonMenuItem object = (JRadioButtonMenuItem) e.getSource();
 			model.getSettings().set(Settings.Setting.Language, object.getName());
-			//model.getSettings().setProperty(Settings.LANG, object.getName());
 			model.getSettings().store();
 			JOptionPane.showMessageDialog(null,
 					Dictionary.translate("language.changed.message"),

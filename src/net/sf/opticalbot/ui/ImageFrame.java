@@ -31,6 +31,7 @@ import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Resources;
 import net.sf.opticalbot.resources.ResourcesKeys;
+import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
 public class ImageFrame extends JPanel {
@@ -287,8 +288,8 @@ public class ImageFrame extends JPanel {
 		public ImagePanel(BufferedImage image) {
 			super();
 			this.image = image;
-			this.shapeSize = model.getSettings().getShapeSize();
-			this.shape = model.getSettings().getShapeType();
+			this.shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
+			this.shape = ShapeType.valueOf(model.getSettings().get(Setting.Shape));
 		}
 
 		@Override

@@ -20,6 +20,7 @@ import net.sf.opticalbot.OMRModelContext;
 import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Settings;
+import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
 public class UIOptions extends JDialog {
@@ -39,13 +40,13 @@ public class UIOptions extends JDialog {
 			int shapeSize = getShapeSize();
 			ShapeType shapeType = getShapeType();
 
-			model.getSettings().setProperty(Settings.THRESHOLD,
+			model.getSettings().set(Settings.Setting.Threshold,
 					String.valueOf(threshold));
-			model.getSettings().setProperty(Settings.DENSITY,
+			model.getSettings().set(Settings.Setting.Density,
 					String.valueOf(density));
-			model.getSettings().setProperty(Settings.SHAPE_SIZE,
+			model.getSettings().set(Settings.Setting.ShapeSize,
 					String.valueOf(shapeSize));
-			model.getSettings().setProperty(Settings.SHAPE_TYPE,
+			model.getSettings().set(Settings.Setting.Shape,
 					shapeType.name());
 			model.getSettings().store();
 			dispose();
@@ -88,10 +89,10 @@ public class UIOptions extends JDialog {
 	}
 
 	private void setDefaultValues() {
-		thresholdValue.setValue(model.getSettings().getThreshold());
-		densityValue.setValue(model.getSettings().getDensity());
-		cbxShapeType.setSelectedItem(model.getSettings().getShapeType());
-		shapeSizeValue.setValue(model.getSettings().getShapeSize());
+		thresholdValue.setValue(Integer.valueOf(model.getSettings().get(Setting.Threshold)));
+		densityValue.setValue(Integer.valueOf(model.getSettings().get(Setting.Density)));
+		cbxShapeType.setSelectedItem(ShapeType.valueOf(model.getSettings().get(Setting.Shape)));
+		shapeSizeValue.setValue(Integer.valueOf(model.getSettings().get(Setting.ShapeSize)));
 	}
 
 	private JPanel getOptionsPanel() {

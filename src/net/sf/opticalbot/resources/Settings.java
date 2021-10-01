@@ -18,12 +18,8 @@ public class Settings extends Properties {
 	public static int MAX_SHAPESIZE = 200;
 	public static int MIN_SHAPESIZE = 1;
 
-	// TODO Use this enum instead of the constants.
 	public enum Setting {
-		Language("lang", "en"),
-		Threshold("threshold", "127"),
-		Density("density", "60"),
-		ShapeSize("shape.size", "60"),
+		Language("lang", "en"), Threshold("threshold", "127"), Density("density", "60"), ShapeSize("shape.size", "60"),
 		Shape("shape.type", ShapeType.CIRCLE.name());
 
 		private final String key;
@@ -43,32 +39,11 @@ public class Settings extends Properties {
 		}
 	}
 
-	public static final String LANG = "lang";
-	public static final String DEFAULT_LANG = "en";
-
-	// TODO To be deprecated - these settings will go on template file
-	public static final String THRESHOLD = "threshold";
-	private static final String DEFAULT_THRESHOLD = "127";
-
-	// TODO To be deprecated - these settings will go on template file
-	public static final String DENSITY = "density";
-	private static final String DEFAULT_DENSITY = "60";
-
-	// TODO To be deprecated - these settings will go on template file
-	public static final String SHAPE_SIZE = "shape.size";
-	private static final String DEFAULT_SHAPE_SIZE = "10";
-
-	// TODO To be deprecated - these settings will go on template file
-	public static final String SHAPE_TYPE = "shape.type";
-	private static final String DEFAULT_SHAPE_TYPE = "CIRCLE";
-
 	private static final String SETTINGS_FILE = "resources/settings/settings.properties";
-
 	private static final long serialVersionUID = 1L;
 
 	public Settings() {
 		super();
-
 		File file = new File(SETTINGS_FILE);
 		try {
 			load(new FileInputStream(file));
@@ -99,43 +74,4 @@ public class Settings extends Properties {
 		super.setProperty(setting.getKey(), value);
 	}
 
-	// TODO After removing all deprecated usages from code, remove these
-	// Overridden methods, because our methods get and set use them!
-
-	@Override
-	@Deprecated
-	/** Discouraged usage. Use get instead. */
-	public String getProperty(String key) {
-		return super.getProperty(key);
-	}
-
-	@Override
-	@Deprecated
-	/** Discouraged usage. Use get instead. */
-	public String getProperty(String key, String defaultValue) {
-		return super.getProperty(key, defaultValue);
-	}
-
-	@Override
-	@Deprecated
-	/** Discouraged usage. Use set instead. */
-	public synchronized Object setProperty(String key, String value) {
-		return super.setProperty(key, value);
-	}
-
-	public int getDensity() {
-		return Integer.valueOf(getProperty(DENSITY, DEFAULT_DENSITY));
-	}
-
-	public int getThreshold() {
-		return Integer.valueOf(getProperty(THRESHOLD, DEFAULT_THRESHOLD));
-	}
-
-	public int getShapeSize() {
-		return Integer.valueOf(getProperty(SHAPE_SIZE, DEFAULT_SHAPE_SIZE));
-	}
-
-	public ShapeType getShapeType() {
-		return ShapeType.valueOf(getProperty(SHAPE_TYPE, DEFAULT_SHAPE_TYPE));
-	}
 }

@@ -27,6 +27,7 @@ import net.sf.opticalbot.omr.exception.UnsupportedImageException;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Resources;
 import net.sf.opticalbot.resources.ResourcesKeys;
+import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.ErrorDialog;
 
 public class UIScan extends JPanel {
@@ -46,9 +47,10 @@ public class UIScan extends JPanel {
 	public final ActionListener actAnalyzeFilesAll = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int threshold = model.getSettings().getThreshold();
-			int density = model.getSettings().getDensity();
-			int shapeSize = model.getSettings().getShapeSize();
+			int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
+			int density = Integer.valueOf(model.getSettings().get(Setting.Density));
+			int shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
+
 			try {
 				if (openedFiles.isEmpty()) {
 					JOptionPane.showMessageDialog(null,
@@ -99,9 +101,9 @@ public class UIScan extends JPanel {
 	public final ActionListener actAnalyzeFilesFirst = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int threshold = model.getSettings().getThreshold();
-			int density = model.getSettings().getDensity();
-			int shapeSize = model.getSettings().getShapeSize();
+			int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
+			int density = Integer.valueOf(model.getSettings().get(Setting.Density));
+			int shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
 
 			try {
 				if (openedFiles.isEmpty()) {
@@ -163,9 +165,9 @@ public class UIScan extends JPanel {
 	public final ActionListener actAnalyzeFilesCurrent = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int threshold = model.getSettings().getThreshold();
-			int density = model.getSettings().getDensity();
-			int shapeSize = model.getSettings().getShapeSize();
+			int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
+			int density = Integer.valueOf(model.getSettings().get(Setting.Density));
+			int shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
 
 			selectFileAt(analyzedFileIndex);
 			File imageFile = openedFiles.get(analyzedFileIndex);
