@@ -228,11 +228,4 @@ public class UIOMRModel extends JPanel {
 	public int getValuesNumber() {
 		return lastUIMultipleCreation.getValuesNumber();
 	}
-
-	// @Deprecated
-	// public void setImageFrame(ImageFrame uiImage) {
-	// // Deprecated because UIOMRModel will contain an image frame itself.
-	// this.uiImage = uiImage;
-	// }
-
 }

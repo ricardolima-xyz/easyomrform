@@ -10,14 +10,22 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -70,10 +78,152 @@ public class ImageFrame extends JPanel {
 		}
 	};
 
+	protected final MouseMotionListener mmoImageFrame = new MouseMotionListener() {
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			switch (getMode()) {
+				case SETUP_POINTS:
+				case MODIFY_POINTS:
+					if (!e.isControlDown() && (buttonPressed == MouseEvent.BUTTON1)) {
+						FormPoint p = showCursorPosition(e);
+						Corner corner = statusBar.getSelectedCorner();
+						if (corner != null) {
+							setCorner(corner, p);
+						} else {
+							addTemporaryPoint(p);
+						}
+						break;
+					}
+				case VIEW:
+					if (e.isControlDown()) {
+						showCursorPosition(e);
+						p2 = new FormPoint(e.getPoint());
+						if (p1.dist2(p2) >= 10) {
+							double deltaX = (p1.getX() - p2.getX());
+							double deltaY = (p1.getY() - p2.getY());
+							p1 = p2;
+							setScrollBars((int) deltaX, (int) deltaY);
+						}
+					}
+				default:
+					break;
+			}
+
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			showCursorPosition(e);
+		}
+	};
+
+	protected final MouseListener mouImageFrame = new MouseListener() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			switch (getMode()) {
+				case MODIFY_POINTS:
+					if (e.getButton() == MouseEvent.BUTTON3) {
+						// TODO Resolve
+						JOptionPane.showMessageDialog(null, "model.deleteNearestPointTo(getCursorPoint(e));");
+					}
+					break;
+				case VIEW:
+				default:
+					break;
+			}
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			setImageCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			setImageCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			buttonPressed = e.getButton();
+			switch (getMode()) {
+				case SETUP_POINTS:
+				case MODIFY_POINTS:
+					if (!e.isControlDown() && (buttonPressed == MouseEvent.BUTTON1)) {
+						FormPoint p = getCursorPoint(e);
+						Corner corner = statusBar.getSelectedCorner();
+
+						if (corner != null) {
+							setCorner(corner, p);
+						} else {
+							addTemporaryPoint(p);
+						}
+						break;
+					}
+				case VIEW:
+					if (e.isControlDown()) {
+						p1 = new FormPoint(e.getPoint());
+						setImageCursor(new Cursor(Cursor.HAND_CURSOR));
+					}
+				default:
+					break;
+			}
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			switch (getMode()) {
+				case SETUP_POINTS:
+				case MODIFY_POINTS:
+					if (!e.isControlDown() && (buttonPressed == MouseEvent.BUTTON1)) {
+						FormPoint p = getCursorPoint(e);
+						Corner corner = statusBar.getSelectedCorner();
+						if (corner != null) {
+							setCorner(corner, p);
+							statusBar.resetCornerButtons();
+						} else {
+							clearTemporaryPoint();
+							addPoint(p);
+						}
+						break;
+					}
+				case VIEW:
+					if (e.isControlDown()) {
+						setImageCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+					}
+				default:
+					break;
+			}
+
+		}
+	};
+
+	protected final MouseWheelListener mwhImageFrame = new MouseWheelListener() {
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			int delta = e.getUnitsToScroll();
+
+			if (e.isControlDown()) {
+				setScrollBars(delta, 0);
+			} else {
+				setScrollBars(0, delta);
+			}
+			FormPoint p = getCursorPoint(e);
+			statusBar.displayPointPosition(p);
+		}
+
+	};
+
+	private FormPoint p1;
+	private FormPoint p2;
+	private int buttonPressed;
+	private final UIOMRModel uiOMRModel;
+	private final List<FormPoint> points;
 	private OMRModelContext model;
 	public final ImagePanel imagePanel;
 	private ImageScrollPane scrollPane;
-	private ImageFrameController controller;
 	public final ImageStatusBar statusBar;
 	private Mode mode;
 	private OMRModel template;
@@ -81,18 +231,16 @@ public class ImageFrame extends JPanel {
 	/**
 	 * Create the frame.
 	 */
-	public ImageFrame(OMRModelContext model, BufferedImage image,
-			OMRModel template, Mode mode, UIOMRModel uiOMRModel) {
+	public ImageFrame(OMRModelContext model, BufferedImage image, OMRModel template, Mode mode, UIOMRModel uiOMRModel) {
 		this.model = model;
 		this.mode = mode;
 		this.template = template;
-
-		controller = new ImageFrameController(this.model, uiOMRModel);
-		controller.add(this);
+		this.points = new LinkedList<FormPoint>();
+		this.uiOMRModel = uiOMRModel;
 
 		this.setLayout(new BorderLayout());
 		imagePanel = new ImagePanel(image);
-		scrollPane = new ImageScrollPane(imagePanel);
+		scrollPane = new ImageScrollPane(imagePanel, this);
 		statusBar = new ImageStatusBar(this.mode);
 		add(scrollPane, BorderLayout.CENTER);
 		add(statusBar, BorderLayout.SOUTH);
@@ -148,40 +296,32 @@ public class ImageFrame extends JPanel {
 
 			JButton btnTopLeft = new JButton();
 			btnTopLeft.addActionListener(actBtnTopLeft);
-			btnTopLeft
-					.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnTopLeft.setSelectedIcon(Resources
-					.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnTopLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+			btnTopLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
 			btnTopLeft.setEnabled(enabled);
 			btnTopLeft.setSelected(false);
 			btnTopLeft.setText(Dictionary.translate("top.left.corner"));
 
 			JButton btnBottomLeft = new JButton();
 			btnBottomLeft.addActionListener(actBtnBottomLeft);
-			btnBottomLeft.setIcon(Resources
-					.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnBottomLeft.setSelectedIcon(Resources
-					.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnBottomLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+			btnBottomLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
 			btnBottomLeft.setEnabled(enabled);
 			btnBottomLeft.setSelected(false);
 			btnBottomLeft.setText(Dictionary.translate("bottom.left.corner"));
 
 			JButton btnTopRight = new JButton();
 			btnTopRight.addActionListener(actBtnTopRight);
-			btnTopRight.setIcon(Resources
-					.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnTopRight.setSelectedIcon(Resources
-					.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnTopRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+			btnTopRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
 			btnTopRight.setEnabled(enabled);
 			btnTopRight.setSelected(false);
 			btnTopRight.setText(Dictionary.translate("top.right.corner"));
 
 			JButton btnBottomRight = new JButton();
 			btnBottomRight.addActionListener(actBtnBottomRight);
-			btnBottomRight.setIcon(Resources
-					.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnBottomRight.setSelectedIcon(Resources
-					.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnBottomRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+			btnBottomRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
 			btnBottomRight.setEnabled(enabled);
 			btnBottomRight.setSelected(false);
 			btnBottomRight.setText(Dictionary.translate("bottom.right.corner"));
@@ -235,12 +375,10 @@ public class ImageFrame extends JPanel {
 		}
 
 		public void showCornerPosition() {
-			for (Entry<Corner, JTextField> entryCorner : cornerPositions
-					.entrySet()) {
+			for (Entry<Corner, JTextField> entryCorner : cornerPositions.entrySet()) {
 				JTextField cornerPosition = entryCorner.getValue();
 
-				cornerPosition.setText(template.getCorner(entryCorner.getKey())
-						.toString());
+				cornerPosition.setText(template.getCorner(entryCorner.getKey()).toString());
 			}
 		}
 	}
@@ -249,19 +387,18 @@ public class ImageFrame extends JPanel {
 
 		private static final long serialVersionUID = 1L;
 
-		public ImageScrollPane(JPanel imagePanel) {
+		public ImageScrollPane(JPanel imagePanel, ImageFrame imageFrame) {
 			super(imagePanel);
 			verticalScrollBar.setValue(0);
 			horizontalScrollBar.setValue(0);
 			setWheelScrollingEnabled(false);
-			addMouseMotionListener(controller);
-			addMouseListener(controller);
-			addMouseWheelListener(controller);
+			addMouseMotionListener(mmoImageFrame);
+			addMouseListener(mouImageFrame);
+			addMouseWheelListener(mwhImageFrame);
 		}
 
 		public void setScrollBars(int deltaX, int deltaY) {
-			horizontalScrollBar.setValue(horizontalScrollBar.getValue()
-					+ deltaX);
+			horizontalScrollBar.setValue(horizontalScrollBar.getValue() + deltaX);
 			verticalScrollBar.setValue(verticalScrollBar.getValue() + deltaY);
 		}
 
@@ -309,7 +446,7 @@ public class ImageFrame extends JPanel {
 				drawPoint(g, point);
 			}
 
-			Iterator<FormPoint> iterator = controller.getPoints().iterator();
+			Iterator<FormPoint> iterator = points.iterator();
 			while (iterator.hasNext())
 				drawPoint(g, iterator.next());
 
@@ -324,11 +461,9 @@ public class ImageFrame extends JPanel {
 				Graphics g1 = g.create();
 				g1.setColor(Color.RED);
 				if (shape.equals(ShapeType.CIRCLE)) {
-					g1.fillArc(x - shapeSize, y - shapeSize, 2 * shapeSize,
-							2 * shapeSize, 0, 360);
+					g1.fillArc(x - shapeSize, y - shapeSize, 2 * shapeSize, 2 * shapeSize, 0, 360);
 				} else if (shape.equals(ShapeType.SQUARE)) {
-					g1.fillRect(x - shapeSize, y - shapeSize, 2 * shapeSize,
-							2 * shapeSize);
+					g1.fillRect(x - shapeSize, y - shapeSize, 2 * shapeSize, 2 * shapeSize);
 				}
 				g1.dispose();
 			}
@@ -338,22 +473,18 @@ public class ImageFrame extends JPanel {
 			Map<Corner, FormPoint> corners = template.getCorners();
 			if (!corners.isEmpty()) {
 				Graphics2D g2d = (Graphics2D) g.create();
-				Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT,
-						BasicStroke.JOIN_BEVEL, 0, new float[] { 5 }, 0);
+				Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5 },
+						0);
 				g2d.setStroke(dashed);
 				g2d.setColor(Color.GREEN);
 				FormPoint p1 = corners.get(Corner.TOP_LEFT);
 				FormPoint p2 = corners.get(Corner.TOP_RIGHT);
 				FormPoint p3 = corners.get(Corner.BOTTOM_LEFT);
 				FormPoint p4 = corners.get(Corner.BOTTOM_RIGHT);
-				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(),
-						(int) p2.getY());
-				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p3.getX(),
-						(int) p3.getY());
-				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p2.getX(),
-						(int) p2.getY());
-				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p3.getX(),
-						(int) p3.getY());
+				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
+				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p3.getX(), (int) p3.getY());
+				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p2.getX(), (int) p2.getY());
+				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p3.getX(), (int) p3.getY());
 				g2d.dispose();
 			}
 		}
@@ -397,8 +528,7 @@ public class ImageFrame extends JPanel {
 	}
 
 	public Dimension getImageSize() {
-		return new Dimension(imagePanel.getImageWidth(),
-				imagePanel.getImageHeight());
+		return new Dimension(imagePanel.getImageWidth(), imagePanel.getImageHeight());
 	}
 
 	public void setTemporaryPoint(FormPoint p) {
@@ -422,4 +552,106 @@ public class ImageFrame extends JPanel {
 		this.mode = mode;
 		statusBar.setCornerButtonsEnabled(mode);
 	}
+
+	private void setCorner(Corner corner, FormPoint point) {
+		OMRModel template = model.getTemplate();
+		template.setCornerAndUpdateDiagonalAndRotation(corner, point);
+		showCornerPosition();
+		repaint();
+	}
+
+	public void addTemporaryPoint(FormPoint point) {
+		setTemporaryPoint(point);
+		repaint();
+	}
+
+	private FormPoint showCursorPosition(MouseEvent e) {
+		FormPoint p = getCursorPoint(e);
+		statusBar.displayPointPosition(p);
+		return p;
+	}
+
+	public void addPoint(FormPoint p) {
+		switch (getMode()) {
+			case SETUP_POINTS:
+				int rows = uiOMRModel.getRowsNumber();
+				int values = uiOMRModel.getValuesNumber();
+
+				if (rows == 1 && values == 1) {
+					if (points.isEmpty()) {
+						points.add(p);
+						uiOMRModel.createFields(points);
+						// TODO: REIMPLEMENT DELETED METHOD
+						// uiOMRModel.toFront();
+					}
+				} else {
+					if (points.isEmpty() || (points.size() > 1)) {
+						points.clear();
+						points.add(p);
+					} else { // points.size() == 1
+						FormPoint p1 = points.get(0);
+						points.clear();
+
+						FormPoint orig = model.getTemplate().getCorners().get(Corner.TOP_LEFT);
+						double rotation = model.getTemplate().getRotation();
+
+						p1.relativePositionTo(orig, rotation);
+						p.relativePositionTo(orig, rotation);
+
+						HashMap<String, Double> delta = model.calcDelta(rows, values, uiOMRModel.getOrientation(), p1,
+								p);
+
+						List<FormPoint> pts = new LinkedList<FormPoint>();
+						double rowsMultiplier;
+						double colsMultiplier;
+						for (int i = 0; i < rows; i++) {
+							for (int j = 0; j < values; j++) {
+								switch (uiOMRModel.getOrientation()) {
+									case QUESTIONS_BY_COLS:
+										rowsMultiplier = j;
+										colsMultiplier = i;
+										break;
+									case QUESTIONS_BY_ROWS:
+									default:
+										rowsMultiplier = i;
+										colsMultiplier = j;
+										break;
+								}
+								FormPoint pi = new FormPoint((p1.getX() + (delta.get("x") * colsMultiplier)),
+										(p1.getY() + (delta.get("y") * rowsMultiplier)));
+								pi.originalPositionFrom(orig, rotation);
+								pts.add(pi);
+							}
+						}
+						setMode(ImageFrame.Mode.VIEW);
+						uiOMRModel.createFields(pts);
+					}
+				}
+				break;
+			case MODIFY_POINTS:
+				// TODO: REIMPLEMENT METHOD
+				JOptionPane.showMessageDialog(null,
+						"It was supposed to call model.filledForm.addPoint(p); and UIMain's createResultsGridFrame(). Showing this message because refactoring is in progress.");
+
+				break;
+			default:
+				break;
+		}
+		repaint();
+	}
+
+	private FormPoint getCursorPoint(MouseEvent e) {
+		int dx = getHorizontalScrollbarValue();
+		int dy = getVerticalScrollbarValue();
+
+		int x = e.getX() + dx;
+		int y = e.getY() + dy;
+
+		return new FormPoint(x, y);
+	}
+
+	public List<FormPoint> getPoints() {
+		return this.points;
+	}
+
 }
