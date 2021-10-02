@@ -1,13 +1,11 @@
 package net.sf.opticalbot.ui;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -45,7 +43,7 @@ import net.sf.opticalbot.ui.utilities.SpringUtilities;
 public class ImageFrame extends JPanel {
 
 	public enum Mode {
-		VIEW, SETUP_POINTS, MODIFY_POINTS;
+		CornerEdit, VIEW, SETUP_POINTS, MODIFY_POINTS;
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -272,7 +270,7 @@ public class ImageFrame extends JPanel {
 
 			if (template != null)
 				showCornerPosition();
-			setCornerButtons(mode);
+			setCornerButtons();
 
 			add(new JLabel(Dictionary.translate("x.cursor.position.label")));
 			add(txfXPosition);
@@ -290,15 +288,12 @@ public class ImageFrame extends JPanel {
 			SpringUtilities.makeCompactGrid(this, 2, 6, 3, 3, 3, 3);
 		}
 
-		private void setCornerButtons(Mode mode) {
-
-			boolean enabled = (mode != Mode.VIEW);
+		private void setCornerButtons() {
 
 			JButton btnTopLeft = new JButton();
 			btnTopLeft.addActionListener(actBtnTopLeft);
 			btnTopLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
 			btnTopLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
-			btnTopLeft.setEnabled(enabled);
 			btnTopLeft.setSelected(false);
 			btnTopLeft.setText(Dictionary.translate("top.left.corner"));
 
@@ -306,7 +301,6 @@ public class ImageFrame extends JPanel {
 			btnBottomLeft.addActionListener(actBtnBottomLeft);
 			btnBottomLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
 			btnBottomLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
-			btnBottomLeft.setEnabled(enabled);
 			btnBottomLeft.setSelected(false);
 			btnBottomLeft.setText(Dictionary.translate("bottom.left.corner"));
 
@@ -314,7 +308,6 @@ public class ImageFrame extends JPanel {
 			btnTopRight.addActionListener(actBtnTopRight);
 			btnTopRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
 			btnTopRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
-			btnTopRight.setEnabled(enabled);
 			btnTopRight.setSelected(false);
 			btnTopRight.setText(Dictionary.translate("top.right.corner"));
 
@@ -322,7 +315,6 @@ public class ImageFrame extends JPanel {
 			btnBottomRight.addActionListener(actBtnBottomRight);
 			btnBottomRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
 			btnBottomRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
-			btnBottomRight.setEnabled(enabled);
 			btnBottomRight.setSelected(false);
 			btnBottomRight.setText(Dictionary.translate("bottom.right.corner"));
 
@@ -473,14 +465,12 @@ public class ImageFrame extends JPanel {
 			Map<Corner, FormPoint> corners = template.getCorners();
 			if (!corners.isEmpty()) {
 				Graphics2D g2d = (Graphics2D) g.create();
-				Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5 },
-						0);
-				g2d.setStroke(dashed);
-				g2d.setColor(Color.GREEN);
+				g2d.setColor(new Color(0, 255, 0, 128));
 				FormPoint p1 = corners.get(Corner.TOP_LEFT);
 				FormPoint p2 = corners.get(Corner.TOP_RIGHT);
 				FormPoint p3 = corners.get(Corner.BOTTOM_LEFT);
 				FormPoint p4 = corners.get(Corner.BOTTOM_RIGHT);
+				
 				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
 				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p3.getX(), (int) p3.getY());
 				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p2.getX(), (int) p2.getY());

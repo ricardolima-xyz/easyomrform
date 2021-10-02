@@ -156,13 +156,48 @@ public class UIOMRModel extends JPanel {
 		pnlFieldList.add(scpFields, BorderLayout.CENTER);
 		pnlFieldList.add(pnlFieldsOptions, BorderLayout.NORTH);
 
-		// pnlModel.add(pnlFieldList, BorderLayout.WEST);
-		JSildeBar jobToolbar = new JSildeBar();
-		jobToolbar.addBar("DICT Fields", pnlFieldList);
-		// TODO ADD Corner buttons here
-		jobToolbar.addBar("DICT Corners", new JPanel());
+		JPanel pnlCorners = new JPanel(new BorderLayout());
+		JButton btnTopLeft = new JButton();
+		//btnTopLeft.addActionListener(actBtnTopLeft);
+		btnTopLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+		btnTopLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnTopLeft.setSelected(false);
+		btnTopLeft.setText(Dictionary.translate("top.left.corner"));
 
-		pnlModel.add(jobToolbar, BorderLayout.WEST);
+		JButton btnBottomLeft = new JButton();
+		//btnBottomLeft.addActionListener(actBtnBottomLeft);
+		btnBottomLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+		btnBottomLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnBottomLeft.setSelected(false);
+		btnBottomLeft.setText(Dictionary.translate("bottom.left.corner"));
+
+		JButton btnTopRight = new JButton();
+		//btnTopRight.addActionListener(actBtnTopRight);
+		btnTopRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+		btnTopRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnTopRight.setSelected(false);
+		btnTopRight.setText(Dictionary.translate("top.right.corner"));
+
+		JButton btnBottomRight = new JButton();
+		btnBottomRight.addActionListener(actBtnBottomRight);
+		btnBottomRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
+		btnBottomRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnBottomRight.setSelected(false);
+		btnBottomRight.setText(Dictionary.translate("bottom.right.corner"));
+
+		//cornerButtons.put(Corner.TOP_LEFT, btnTopLeft);
+		//cornerButtons.put(Corner.BOTTOM_LEFT, btnBottomLeft);
+		//cornerButtons.put(Corner.TOP_RIGHT, btnTopRight);
+		//cornerButtons.put(Corner.BOTTOM_RIGHT, btnBottomRight);
+
+
+		// pnlModel.add(pnlFieldList, BorderLayout.WEST);
+		JSildeBar jslToolbar = new JSildeBar();
+		jslToolbar.addBar("DICT Fields", pnlFieldList);
+		// TODO ADD Corner buttons here
+		jslToolbar.addBar("DICT Corners", pnlCorners);
+
+		pnlModel.add(jslToolbar, BorderLayout.WEST);
 
 		// Image panel at center
 		this.uiImage = new ImageFrame(opticalbot, opticalbot.getTemplate()
