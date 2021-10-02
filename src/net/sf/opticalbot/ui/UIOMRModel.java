@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 
 import net.sf.opticalbot.OMRModelContext;
 import net.sf.opticalbot.omr.FormField;
@@ -23,8 +24,9 @@ import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRModelFactory;
 import net.sf.opticalbot.omr.exception.OMRModelSaveException;
 import net.sf.opticalbot.resources.Dictionary;
+import net.sf.opticalbot.resources.Icons;
 import net.sf.opticalbot.resources.Resources;
-import net.sf.opticalbot.resources.ResourcesKeys;
+import net.sf.opticalbot.ui.utilities.ErrorDialog;
 import net.sf.opticalbot.ui.utilities.JSildeBar;
 import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
@@ -125,6 +127,7 @@ public class UIOMRModel extends JPanel {
 		this.lsmFields = new FieldListModel(opticalbot.getTemplate());
 
 		JPanel pnlModel = new JPanel(new BorderLayout());
+		pnlModel.setOpaque(false);
 		// Fields panel at west
 		lstFields = new JList<FormField>(lsmFields);
 		lstFields
@@ -134,14 +137,14 @@ public class UIOMRModel extends JPanel {
 		JButton btnMultipleFieldsCreation = new JButton();
 		btnMultipleFieldsCreation.addActionListener(actMultipleFieldsCreation);
 		btnMultipleFieldsCreation.setIcon(Resources
-				.getIcon(ResourcesKeys.ADD_FIELD_BUTTON));
+				.getIcon(Icons.ADD_FIELD_BUTTON));
 		btnMultipleFieldsCreation.setToolTipText(Dictionary
 				.translate("add.field.button.tooltip"));
 
 		JButton btnFieldDelete = new JButton();
 		btnFieldDelete.addActionListener(actFieldDelete);
 		btnFieldDelete.setIcon(Resources
-				.getIcon(ResourcesKeys.REMOVE_FIELD_BUTTON));
+				.getIcon(Icons.REMOVE_FIELD_BUTTON));
 		btnFieldDelete.setToolTipText(Dictionary
 				.translate("remove.field.button.tooltip"));
 
@@ -150,46 +153,66 @@ public class UIOMRModel extends JPanel {
 		pnlFieldsOptions.setLayout(new SpringLayout());
 		pnlFieldsOptions.add(btnMultipleFieldsCreation);
 		pnlFieldsOptions.add(btnFieldDelete);
-		SpringUtilities.makeGrid(pnlFieldsOptions, 1, 2, 3, 3, 3, 3);
+		SpringUtilities.makeGrid(pnlFieldsOptions, 2, 1, 1, 1, 3, 3);
 
 		JPanel pnlFieldList = new JPanel(new BorderLayout());
 		pnlFieldList.add(scpFields, BorderLayout.CENTER);
 		pnlFieldList.add(pnlFieldsOptions, BorderLayout.NORTH);
 
-		JPanel pnlCorners = new JPanel(new BorderLayout());
+		// Corners panel
 		JButton btnTopLeft = new JButton();
+		btnTopLeft.setHorizontalAlignment(SwingConstants.LEFT);
 		//btnTopLeft.addActionListener(actBtnTopLeft);
-		btnTopLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-		btnTopLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnTopLeft.setIcon(Resources.getIcon(Icons.CORNER_TOP_LEFT));
 		btnTopLeft.setSelected(false);
 		btnTopLeft.setText(Dictionary.translate("top.left.corner"));
 
 		JButton btnBottomLeft = new JButton();
+		btnBottomLeft.setHorizontalAlignment(SwingConstants.LEFT);
 		//btnBottomLeft.addActionListener(actBtnBottomLeft);
-		btnBottomLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-		btnBottomLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnBottomLeft.setIcon(Resources.getIcon(Icons.CORNER_BOTTOM_LEFT));
 		btnBottomLeft.setSelected(false);
 		btnBottomLeft.setText(Dictionary.translate("bottom.left.corner"));
 
 		JButton btnTopRight = new JButton();
+		btnTopRight.setHorizontalAlignment(SwingConstants.LEFT);
 		//btnTopRight.addActionListener(actBtnTopRight);
-		btnTopRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-		btnTopRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnTopRight.setIcon(Resources.getIcon(Icons.CORNER_TOP_RIGHT));
 		btnTopRight.setSelected(false);
 		btnTopRight.setText(Dictionary.translate("top.right.corner"));
 
 		JButton btnBottomRight = new JButton();
-		btnBottomRight.addActionListener(actBtnBottomRight);
-		btnBottomRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-		btnBottomRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+		btnBottomRight.setHorizontalAlignment(SwingConstants.LEFT);
+		//btnBottomRight.addActionListener(actBtnBottomRight);
+		btnBottomRight.setIcon(Resources.getIcon(Icons.CORNER_BOTTOM_RIGHT));
 		btnBottomRight.setSelected(false);
 		btnBottomRight.setText(Dictionary.translate("bottom.right.corner"));
+
+		JButton btnAutoDetect = new JButton();
+		btnAutoDetect.setHorizontalAlignment(SwingConstants.LEFT);
+		// TODO Implement AutoDetect button
+		btnAutoDetect.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ErrorDialog(new Throwable("Method not implemented")).setVisible(true);;
+		}});
+		btnAutoDetect.setIcon(Resources.getIcon(Icons.CORNER_AUTO_DETECT));
+		btnAutoDetect.setText("DICT Auto detect");
+		
+		JPanel pnlCorners = new JPanel(new BorderLayout());
+		pnlCorners.setOpaque(false);
+		pnlCorners.setLayout(new SpringLayout());
+		pnlCorners.add(btnTopLeft);
+		pnlCorners.add(btnTopRight);
+		pnlCorners.add(btnBottomLeft);
+		pnlCorners.add(btnBottomRight);
+		pnlCorners.add(btnAutoDetect);
+		SpringUtilities.makeGrid(pnlCorners, 5, 1, 1, 1, 3, 3);
 
 		//cornerButtons.put(Corner.TOP_LEFT, btnTopLeft);
 		//cornerButtons.put(Corner.BOTTOM_LEFT, btnBottomLeft);
 		//cornerButtons.put(Corner.TOP_RIGHT, btnTopRight);
 		//cornerButtons.put(Corner.BOTTOM_RIGHT, btnBottomRight);
-
 
 		// pnlModel.add(pnlFieldList, BorderLayout.WEST);
 		JSildeBar jslToolbar = new JSildeBar();

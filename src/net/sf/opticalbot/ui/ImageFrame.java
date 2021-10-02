@@ -35,8 +35,8 @@ import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Dictionary;
+import net.sf.opticalbot.resources.Icons;
 import net.sf.opticalbot.resources.Resources;
-import net.sf.opticalbot.resources.ResourcesKeys;
 import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
@@ -292,29 +292,29 @@ public class ImageFrame extends JPanel {
 
 			JButton btnTopLeft = new JButton();
 			btnTopLeft.addActionListener(actBtnTopLeft);
-			btnTopLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnTopLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnTopLeft.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
+			btnTopLeft.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
 			btnTopLeft.setSelected(false);
 			btnTopLeft.setText(Dictionary.translate("top.left.corner"));
 
 			JButton btnBottomLeft = new JButton();
 			btnBottomLeft.addActionListener(actBtnBottomLeft);
-			btnBottomLeft.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnBottomLeft.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnBottomLeft.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
+			btnBottomLeft.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
 			btnBottomLeft.setSelected(false);
 			btnBottomLeft.setText(Dictionary.translate("bottom.left.corner"));
 
 			JButton btnTopRight = new JButton();
 			btnTopRight.addActionListener(actBtnTopRight);
-			btnTopRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnTopRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnTopRight.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
+			btnTopRight.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
 			btnTopRight.setSelected(false);
 			btnTopRight.setText(Dictionary.translate("top.right.corner"));
 
 			JButton btnBottomRight = new JButton();
 			btnBottomRight.addActionListener(actBtnBottomRight);
-			btnBottomRight.setIcon(Resources.getIcon(ResourcesKeys.DISABLED_BUTTON));
-			btnBottomRight.setSelectedIcon(Resources.getIcon(ResourcesKeys.ENABLED_BUTTON));
+			btnBottomRight.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
+			btnBottomRight.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
 			btnBottomRight.setSelected(false);
 			btnBottomRight.setText(Dictionary.translate("bottom.right.corner"));
 

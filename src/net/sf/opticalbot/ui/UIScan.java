@@ -25,8 +25,8 @@ import net.sf.opticalbot.OMRModelContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.exception.UnsupportedImageException;
 import net.sf.opticalbot.resources.Dictionary;
+import net.sf.opticalbot.resources.Icons;
 import net.sf.opticalbot.resources.Resources;
-import net.sf.opticalbot.resources.ResourcesKeys;
 import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.ErrorDialog;
 
@@ -242,7 +242,7 @@ public class UIScan extends JPanel {
 
 		JButton btnOpen = new JButton();
 		btnOpen.addActionListener(actOpenImages);
-		btnOpen.setIcon(Resources.getIcon(ResourcesKeys.OPEN_IMAGES_ICON));
+		btnOpen.setIcon(Resources.getIcon(Icons.OPEN_IMAGES_ICON));
 		btnOpen.setToolTipText(Dictionary.translate("open.images.tooltip"));
 
 		JButton btnClear = new JButton("Clear list");
@@ -250,20 +250,20 @@ public class UIScan extends JPanel {
 
 		JButton btnStart = new JButton();
 		btnStart.addActionListener(actAnalyzeFilesFirst);
-		btnStart.setIcon(Resources.getIcon(ResourcesKeys.ANALYZE_FILES_ICON));
+		btnStart.setIcon(Resources.getIcon(Icons.ANALYZE_FILES_ICON));
 		btnStart.setToolTipText(Dictionary.translate("analyze.files.tooltip"));
 
 		JButton btnStartAll = new JButton();
 		btnStartAll.addActionListener(actAnalyzeFilesAll);
 		btnStartAll.setIcon(Resources
-				.getIcon(ResourcesKeys.ANALYZE_FILES_ALL_ICON));
+				.getIcon(Icons.ANALYZE_FILES_ALL_ICON));
 		btnStartAll.setToolTipText(Dictionary
 				.translate("analyze.files.all.tooltip"));
 
 		JButton btnReload = new JButton();
 		btnReload.addActionListener(actAnalyzeFilesCurrent);
 		btnReload.setIcon(Resources
-				.getIcon(ResourcesKeys.ANALYZE_FILES_CURRENT_ICON));
+				.getIcon(Icons.ANALYZE_FILES_CURRENT_ICON));
 		btnReload.setToolTipText(Dictionary
 				.translate("analyze.files.current.tooltip"));
 
