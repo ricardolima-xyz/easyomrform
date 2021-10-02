@@ -132,7 +132,7 @@ public class UIScan extends JPanel {
 						// ImageFrame(model, image, template, mode,
 						// null);
 						uiView = new ImageFrame(model, filledForm.getImage(),
-								filledForm, ImageFrame.Mode.MODIFY_POINTS, null);
+								ImageFrame.Mode.MODIFY_POINTS, null);
 						uiView.revalidate();
 						uiView.repaint();
 						createResultsGridFrame(filledForm);
@@ -171,7 +171,7 @@ public class UIScan extends JPanel {
 
 			selectFileAt(analyzedFileIndex);
 			File imageFile = openedFiles.get(analyzedFileIndex);
-			filledForm = uiView.getTemplate();
+			filledForm = model.getTemplate();
 			filledForm.clearPoints();
 			filledForm.findPoints(threshold, density, shapeSize);
 			// points = filledForm.getFieldPoints();
@@ -278,7 +278,7 @@ public class UIScan extends JPanel {
 		this.list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.scrollPane = new JScrollPane(list);
 
-		this.uiView = new ImageFrame(model, null, null,
+		this.uiView = new ImageFrame(model, null,
 				ImageFrame.Mode.MODIFY_POINTS, null);
 
 		add(pnlOptions, BorderLayout.NORTH);

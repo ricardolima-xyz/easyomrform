@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,6 +22,7 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
 import net.sf.opticalbot.OMRModelContext;
+import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRModelFactory;
@@ -33,6 +37,34 @@ import net.sf.opticalbot.ui.utilities.SpringUtilities;
 public class UIOMRModel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+
+	private final ActionListener actCornerTopLeft = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			toggleCornerButton(Corner.TOP_LEFT);
+		}
+	};
+
+	private final ActionListener actCornerBottomLeft = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			toggleCornerButton(Corner.BOTTOM_LEFT);
+		}
+	};
+
+	private final ActionListener actCornerTopRight = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			toggleCornerButton(Corner.TOP_RIGHT);
+		}
+	};
+
+	private final ActionListener actCornerBottomRight = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			toggleCornerButton(Corner.BOTTOM_RIGHT);
+		}
+	};
 
 	public final ActionListener actFieldDelete = new ActionListener() {
 		@Override
@@ -119,6 +151,8 @@ public class UIOMRModel extends JPanel {
 	private int autoNumberingStart = 1;
 	private ImageFrame uiImage;
 	private UIMultipleFieldsCreation lastUIMultipleCreation;
+	private HashMap<Corner, JButton> cornerButtons = new HashMap<Corner, JButton>();
+	private HashMap<Corner, JLabel> cornerLabels = new HashMap<Corner, JLabel>();
 
 	public UIOMRModel(OMRModelContext opticalbot, UIMain fraMain) {
 		this.setLayout(new BorderLayout());
@@ -162,31 +196,45 @@ public class UIOMRModel extends JPanel {
 		// Corners panel
 		JButton btnTopLeft = new JButton();
 		btnTopLeft.setHorizontalAlignment(SwingConstants.LEFT);
-		//btnTopLeft.addActionListener(actBtnTopLeft);
+		btnTopLeft.addActionListener(actCornerTopLeft);
 		btnTopLeft.setIcon(Resources.getIcon(Icons.CORNER_TOP_LEFT));
 		btnTopLeft.setSelected(false);
 		btnTopLeft.setText(Dictionary.translate("top.left.corner"));
+		JLabel lblTopLeft = new JLabel();
 
 		JButton btnBottomLeft = new JButton();
 		btnBottomLeft.setHorizontalAlignment(SwingConstants.LEFT);
-		//btnBottomLeft.addActionListener(actBtnBottomLeft);
+		btnBottomLeft.addActionListener(actCornerBottomLeft);
 		btnBottomLeft.setIcon(Resources.getIcon(Icons.CORNER_BOTTOM_LEFT));
 		btnBottomLeft.setSelected(false);
 		btnBottomLeft.setText(Dictionary.translate("bottom.left.corner"));
+		JLabel lblBottomLeft = new JLabel();
 
 		JButton btnTopRight = new JButton();
 		btnTopRight.setHorizontalAlignment(SwingConstants.LEFT);
-		//btnTopRight.addActionListener(actBtnTopRight);
+		btnTopRight.addActionListener(actCornerTopRight);
 		btnTopRight.setIcon(Resources.getIcon(Icons.CORNER_TOP_RIGHT));
 		btnTopRight.setSelected(false);
 		btnTopRight.setText(Dictionary.translate("top.right.corner"));
+		JLabel lblTopRight = new JLabel();
 
 		JButton btnBottomRight = new JButton();
 		btnBottomRight.setHorizontalAlignment(SwingConstants.LEFT);
-		//btnBottomRight.addActionListener(actBtnBottomRight);
+		btnBottomRight.addActionListener(actCornerBottomRight);
 		btnBottomRight.setIcon(Resources.getIcon(Icons.CORNER_BOTTOM_RIGHT));
 		btnBottomRight.setSelected(false);
 		btnBottomRight.setText(Dictionary.translate("bottom.right.corner"));
+		JLabel lblBottomRight = new JLabel();
+
+		cornerButtons.put(Corner.TOP_LEFT, btnTopLeft);
+		cornerButtons.put(Corner.BOTTOM_LEFT, btnBottomLeft);
+		cornerButtons.put(Corner.TOP_RIGHT, btnTopRight);
+		cornerButtons.put(Corner.BOTTOM_RIGHT, btnBottomRight);
+		cornerLabels.put(Corner.TOP_LEFT, lblTopLeft);
+		cornerLabels.put(Corner.BOTTOM_LEFT, lblBottomLeft);
+		cornerLabels.put(Corner.TOP_RIGHT, lblTopRight);
+		cornerLabels.put(Corner.BOTTOM_RIGHT, lblBottomRight);
+		updateCornerPosition();
 
 		JButton btnAutoDetect = new JButton();
 		btnAutoDetect.setHorizontalAlignment(SwingConstants.LEFT);
@@ -202,17 +250,17 @@ public class UIOMRModel extends JPanel {
 		JPanel pnlCorners = new JPanel(new BorderLayout());
 		pnlCorners.setOpaque(false);
 		pnlCorners.setLayout(new SpringLayout());
-		pnlCorners.add(btnTopLeft);
-		pnlCorners.add(btnTopRight);
-		pnlCorners.add(btnBottomLeft);
-		pnlCorners.add(btnBottomRight);
 		pnlCorners.add(btnAutoDetect);
-		SpringUtilities.makeGrid(pnlCorners, 5, 1, 1, 1, 3, 3);
+		pnlCorners.add(btnTopLeft);
+		pnlCorners.add(lblTopLeft);
+		pnlCorners.add(btnTopRight);
+		pnlCorners.add(lblTopRight);
+		pnlCorners.add(btnBottomLeft);
+		pnlCorners.add(lblBottomLeft);
+		pnlCorners.add(btnBottomRight);
+		pnlCorners.add(lblBottomRight);
 
-		//cornerButtons.put(Corner.TOP_LEFT, btnTopLeft);
-		//cornerButtons.put(Corner.BOTTOM_LEFT, btnBottomLeft);
-		//cornerButtons.put(Corner.TOP_RIGHT, btnTopRight);
-		//cornerButtons.put(Corner.BOTTOM_RIGHT, btnBottomRight);
+		SpringUtilities.makeCompactGrid(pnlCorners, 9, 1, 1, 1, 3, 3);
 
 		// pnlModel.add(pnlFieldList, BorderLayout.WEST);
 		JSildeBar jslToolbar = new JSildeBar();
@@ -224,8 +272,7 @@ public class UIOMRModel extends JPanel {
 
 		// Image panel at center
 		this.uiImage = new ImageFrame(opticalbot, opticalbot.getTemplate()
-				.getImage(), opticalbot.getTemplate(), ImageFrame.Mode.VIEW,
-				this);
+				.getImage(), ImageFrame.Mode.VIEW, this);
 
 		pnlModel.add(uiImage, BorderLayout.CENTER);
 
@@ -285,5 +332,40 @@ public class UIOMRModel extends JPanel {
 
 	public int getValuesNumber() {
 		return lastUIMultipleCreation.getValuesNumber();
+	}
+
+	public void toggleCornerButton(Corner corner) {
+		for (Entry<Corner, JButton> entryCorner : cornerButtons.entrySet()) {
+			JButton button = entryCorner.getValue();
+
+			if (entryCorner.getKey().equals(corner)) {
+				boolean buttonsNewState = !button.isSelected();
+				button.setSelected(buttonsNewState);
+				if (buttonsNewState == true)
+					uiImage.setMode(ImageFrame.Mode.CornerEdit);
+				else
+					uiImage.setMode(ImageFrame.Mode.VIEW);
+			} else {
+				button.setSelected(false);
+			}
+		}
+	}
+
+	public Corner getSelectedCorner() {
+		for (Entry<Corner, JButton> entryCorner : cornerButtons.entrySet()) {
+			JButton button = entryCorner.getValue();
+
+			if (button.isSelected()) {
+				return entryCorner.getKey();
+			}
+		}
+		return null;
+	}
+
+	public void updateCornerPosition() {
+		for (Entry<Corner, JLabel> entryCorner : cornerLabels.entrySet()) {
+			JLabel cornerLabel = entryCorner.getValue();
+			cornerLabel.setText(opticalbot.getTemplate().getCorner(entryCorner.getKey()).toString());
+		}
 	}
 }

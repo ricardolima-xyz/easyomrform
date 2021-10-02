@@ -6,8 +6,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -19,9 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,11 +28,8 @@ import javax.swing.SpringLayout;
 import net.sf.opticalbot.OMRModelContext;
 import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormPoint;
-import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Dictionary;
-import net.sf.opticalbot.resources.Icons;
-import net.sf.opticalbot.resources.Resources;
 import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
@@ -48,50 +41,23 @@ public class ImageFrame extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private final ActionListener actBtnTopLeft = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			statusBar.toggleCornerButton(Corner.TOP_LEFT);
-		}
-	};
-
-	private final ActionListener actBtnBottomLeft = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			statusBar.toggleCornerButton(Corner.BOTTOM_LEFT);
-		}
-	};
-
-	private final ActionListener actBtnTopRight = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			statusBar.toggleCornerButton(Corner.TOP_RIGHT);
-		}
-	};
-
-	private final ActionListener actBtnBottomRight = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			statusBar.toggleCornerButton(Corner.BOTTOM_RIGHT);
-		}
-	};
-
 	protected final MouseMotionListener mmoImageFrame = new MouseMotionListener() {
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			switch (getMode()) {
+				case CornerEdit:
+					Corner cornerToEdit = uiOMRModel.getSelectedCorner();
+					if (cornerToEdit != null) {
+						setCorner(cornerToEdit, showCursorPosition(e));
+					} 
+					break;
 				case SETUP_POINTS:
 				case MODIFY_POINTS:
 					if (!e.isControlDown() && (buttonPressed == MouseEvent.BUTTON1)) {
 						FormPoint p = showCursorPosition(e);
-						Corner corner = statusBar.getSelectedCorner();
-						if (corner != null) {
-							setCorner(corner, p);
-						} else {
-							addTemporaryPoint(p);
-						}
-						break;
+						addTemporaryPoint(p);
 					}
+					break;
 				case VIEW:
 					if (e.isControlDown()) {
 						showCursorPosition(e);
@@ -119,6 +85,12 @@ public class ImageFrame extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			switch (getMode()) {
+				case CornerEdit:
+					Corner cornerToEdit = uiOMRModel.getSelectedCorner();
+					if (cornerToEdit != null) {
+						setCorner(cornerToEdit, showCursorPosition(e));
+					} 
+					break;
 				case MODIFY_POINTS:
 					if (e.getButton() == MouseEvent.BUTTON3) {
 						// TODO Resolve
@@ -146,17 +118,17 @@ public class ImageFrame extends JPanel {
 		public void mousePressed(MouseEvent e) {
 			buttonPressed = e.getButton();
 			switch (getMode()) {
+				case CornerEdit:
+					Corner cornerToEdit = uiOMRModel.getSelectedCorner();
+					if (cornerToEdit != null) {
+						setCorner(cornerToEdit, showCursorPosition(e));
+					} 
+					break;
 				case SETUP_POINTS:
 				case MODIFY_POINTS:
 					if (!e.isControlDown() && (buttonPressed == MouseEvent.BUTTON1)) {
 						FormPoint p = getCursorPoint(e);
-						Corner corner = statusBar.getSelectedCorner();
-
-						if (corner != null) {
-							setCorner(corner, p);
-						} else {
-							addTemporaryPoint(p);
-						}
+						addTemporaryPoint(p);
 						break;
 					}
 				case VIEW:
@@ -177,16 +149,10 @@ public class ImageFrame extends JPanel {
 				case MODIFY_POINTS:
 					if (!e.isControlDown() && (buttonPressed == MouseEvent.BUTTON1)) {
 						FormPoint p = getCursorPoint(e);
-						Corner corner = statusBar.getSelectedCorner();
-						if (corner != null) {
-							setCorner(corner, p);
-							statusBar.resetCornerButtons();
-						} else {
-							clearTemporaryPoint();
-							addPoint(p);
-						}
-						break;
+						clearTemporaryPoint();
+						addPoint(p);
 					}
+					break;
 				case VIEW:
 					if (e.isControlDown()) {
 						setImageCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
@@ -224,15 +190,13 @@ public class ImageFrame extends JPanel {
 	private ImageScrollPane scrollPane;
 	public final ImageStatusBar statusBar;
 	private Mode mode;
-	private OMRModel template;
 
 	/**
 	 * Create the frame.
 	 */
-	public ImageFrame(OMRModelContext model, BufferedImage image, OMRModel template, Mode mode, UIOMRModel uiOMRModel) {
+	public ImageFrame(OMRModelContext model, BufferedImage image, Mode mode, UIOMRModel uiOMRModel) {
 		this.model = model;
 		this.mode = mode;
-		this.template = template;
 		this.points = new LinkedList<FormPoint>();
 		this.uiOMRModel = uiOMRModel;
 
@@ -249,8 +213,6 @@ public class ImageFrame extends JPanel {
 
 		private final JTextField txfXPosition;
 		private final JTextField txfYPosition;
-		private HashMap<Corner, JButton> cornerButtons = new HashMap<Corner, JButton>();
-		private HashMap<Corner, JTextField> cornerPositions = new HashMap<Corner, JTextField>();
 
 		public ImageStatusBar(Mode mode) {
 			super();
@@ -262,66 +224,15 @@ public class ImageFrame extends JPanel {
 			this.txfYPosition = new JTextField(10);
 			this.txfYPosition.setEditable(false);
 
-			for (Corner corner : Corner.values()) {
-				JTextField txf = new JTextField(10);
-				txf.setEditable(false);
-				cornerPositions.put(corner, txf);
-			}
-
-			if (template != null)
+			if (model.getTemplate() != null)
 				showCornerPosition();
-			setCornerButtons();
 
 			add(new JLabel(Dictionary.translate("x.cursor.position.label")));
 			add(txfXPosition);
-			add(cornerButtons.get(Corner.TOP_LEFT));
-			add(cornerPositions.get(Corner.TOP_LEFT));
-			add(cornerButtons.get(Corner.TOP_RIGHT));
-			add(cornerPositions.get(Corner.TOP_RIGHT));
 			add(new JLabel(Dictionary.translate("y.cursor.position.label")));
 			add(txfYPosition);
-			add(cornerButtons.get(Corner.BOTTOM_LEFT));
-			add(cornerPositions.get(Corner.BOTTOM_LEFT));
-			add(cornerButtons.get(Corner.BOTTOM_RIGHT));
-			add(cornerPositions.get(Corner.BOTTOM_RIGHT));
 
-			SpringUtilities.makeCompactGrid(this, 2, 6, 3, 3, 3, 3);
-		}
-
-		private void setCornerButtons() {
-
-			JButton btnTopLeft = new JButton();
-			btnTopLeft.addActionListener(actBtnTopLeft);
-			btnTopLeft.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
-			btnTopLeft.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
-			btnTopLeft.setSelected(false);
-			btnTopLeft.setText(Dictionary.translate("top.left.corner"));
-
-			JButton btnBottomLeft = new JButton();
-			btnBottomLeft.addActionListener(actBtnBottomLeft);
-			btnBottomLeft.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
-			btnBottomLeft.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
-			btnBottomLeft.setSelected(false);
-			btnBottomLeft.setText(Dictionary.translate("bottom.left.corner"));
-
-			JButton btnTopRight = new JButton();
-			btnTopRight.addActionListener(actBtnTopRight);
-			btnTopRight.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
-			btnTopRight.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
-			btnTopRight.setSelected(false);
-			btnTopRight.setText(Dictionary.translate("top.right.corner"));
-
-			JButton btnBottomRight = new JButton();
-			btnBottomRight.addActionListener(actBtnBottomRight);
-			btnBottomRight.setIcon(Resources.getIcon(Icons.DISABLED_BUTTON));
-			btnBottomRight.setSelectedIcon(Resources.getIcon(Icons.ENABLED_BUTTON));
-			btnBottomRight.setSelected(false);
-			btnBottomRight.setText(Dictionary.translate("bottom.right.corner"));
-
-			cornerButtons.put(Corner.TOP_LEFT, btnTopLeft);
-			cornerButtons.put(Corner.BOTTOM_LEFT, btnBottomLeft);
-			cornerButtons.put(Corner.TOP_RIGHT, btnTopRight);
-			cornerButtons.put(Corner.BOTTOM_RIGHT, btnBottomRight);
+			SpringUtilities.makeCompactGrid(this, 1, 4, 1, 1, 3, 3);
 		}
 
 		public void displayPointPosition(FormPoint p) {
@@ -329,50 +240,6 @@ public class ImageFrame extends JPanel {
 			txfYPosition.setText(Double.toString(p.getY()));
 		}
 
-		public void toggleCornerButton(Corner corner) {
-			for (Entry<Corner, JButton> entryCorner : cornerButtons.entrySet()) {
-				JButton button = entryCorner.getValue();
-
-				if (entryCorner.getKey().equals(corner)) {
-					button.setSelected(!button.isSelected());
-				} else {
-					button.setSelected(false);
-				}
-			}
-		}
-
-		public Corner getSelectedCorner() {
-			for (Entry<Corner, JButton> entryCorner : cornerButtons.entrySet()) {
-				JButton button = entryCorner.getValue();
-
-				if (button.isSelected()) {
-					return entryCorner.getKey();
-				}
-			}
-			return null;
-		}
-
-		public void resetCornerButtons() {
-			for (Entry<Corner, JButton> entryCorner : cornerButtons.entrySet()) {
-				JButton button = entryCorner.getValue();
-				button.setSelected(false);
-			}
-		}
-
-		public void setCornerButtonsEnabled(Mode mode) {
-			for (Entry<Corner, JButton> entryCorner : cornerButtons.entrySet()) {
-				JButton button = entryCorner.getValue();
-				button.setEnabled(mode != Mode.VIEW);
-			}
-		}
-
-		public void showCornerPosition() {
-			for (Entry<Corner, JTextField> entryCorner : cornerPositions.entrySet()) {
-				JTextField cornerPosition = entryCorner.getValue();
-
-				cornerPosition.setText(template.getCorner(entryCorner.getKey()).toString());
-			}
-		}
 	}
 
 	private class ImageScrollPane extends JScrollPane {
@@ -404,7 +271,6 @@ public class ImageFrame extends JPanel {
 	}
 
 	private class ImagePanel extends JPanel {
-
 		private static final long serialVersionUID = 1L;
 		private int width;
 		private int height;
@@ -427,14 +293,14 @@ public class ImageFrame extends JPanel {
 			height = (image == null) ? 0 : image.getHeight();
 			setPreferredSize(new Dimension(width, height));
 			g.drawImage(image, 0, 0, width, height, this);
-			if (template != null) {
+			if (model.getTemplate() != null) {
 				drawPoints(g);
 				drawCorners(g);
 			}
 		}
 
 		private void drawPoints(Graphics g) {
-			for (FormPoint point : template.getFieldsPoints()) {
+			for (FormPoint point : model.getTemplate().getFieldsPoints()) {
 				drawPoint(g, point);
 			}
 
@@ -462,7 +328,7 @@ public class ImageFrame extends JPanel {
 		}
 
 		public void drawCorners(Graphics g) {
-			Map<Corner, FormPoint> corners = template.getCorners();
+			Map<Corner, FormPoint> corners = model.getTemplate().getCorners();
 			if (!corners.isEmpty()) {
 				Graphics2D g2d = (Graphics2D) g.create();
 				g2d.setColor(new Color(0, 255, 0, 128));
@@ -526,12 +392,8 @@ public class ImageFrame extends JPanel {
 	}
 
 	public void showCornerPosition() {
-		statusBar.showCornerPosition();
-	}
-
-	@Deprecated
-	public OMRModel getTemplate() {
-		return template;
+		if (uiOMRModel != null) // TODO WHY THIS CHECK?
+			uiOMRModel.updateCornerPosition();
 	}
 
 	public void clearTemporaryPoint() {
@@ -540,12 +402,10 @@ public class ImageFrame extends JPanel {
 
 	public void setMode(Mode mode) {
 		this.mode = mode;
-		statusBar.setCornerButtonsEnabled(mode);
 	}
 
 	private void setCorner(Corner corner, FormPoint point) {
-		OMRModel template = model.getTemplate();
-		template.setCornerAndUpdateDiagonalAndRotation(corner, point);
+		model.getTemplate().setCornerAndUpdateDiagonalAndRotation(corner, point);
 		showCornerPosition();
 		repaint();
 	}
