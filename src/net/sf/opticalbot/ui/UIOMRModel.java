@@ -26,6 +26,7 @@ import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRModelFactory;
+import net.sf.opticalbot.omr.Orientation;
 import net.sf.opticalbot.omr.exception.OMRModelSaveException;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Icons;

@@ -1,4 +1,4 @@
-package net.sf.opticalbot.ui;
+package net.sf.opticalbot.omr;
 
 import net.sf.opticalbot.resources.Dictionary;
 
