@@ -14,6 +14,7 @@ import net.sf.opticalbot.ui.Orientation;
 /** Main Application back-end. */
 public class OMRModelContext {
 
+	// TODO: CHANGE AND DELETE SF REPOSITORY
 	public static final String WEB_PAGE = "http://opticalbot.sourceforge.net/";
 
 	public HashMap<String, OMRModel> filledForms = new HashMap<String, OMRModel>();

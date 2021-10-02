@@ -145,7 +145,7 @@ public class UIOMRModel extends JPanel {
 	};
 
 	private final UIMain fraMain;
-	private FieldListModel lsmFields;
+	private UIFieldListModel lsmFields;
 	private JList<FormField> lstFields;
 	private final OMRModelContext opticalbot;
 	private int autoNumberingStart = 1;
@@ -158,42 +158,34 @@ public class UIOMRModel extends JPanel {
 		this.setLayout(new BorderLayout());
 		this.opticalbot = opticalbot;
 		this.fraMain = fraMain;
-		this.lsmFields = new FieldListModel(opticalbot.getTemplate());
+		this.lsmFields = new UIFieldListModel(opticalbot.getTemplate());
 
 		JPanel pnlModel = new JPanel(new BorderLayout());
 		pnlModel.setOpaque(false);
-		// Fields panel at west
-		lstFields = new JList<FormField>(lsmFields);
-		lstFields
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		JScrollPane scpFields = new JScrollPane(lstFields);
+		
+		// General panel
+		JButton btnSetImage = new JButton();
+		btnSetImage.setHorizontalAlignment(SwingConstants.LEFT);
+		// TODO Implement Image button
+		btnSetImage.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ErrorDialog(new Throwable("Method not implemented")).setVisible(true);;
+		}});
+		btnSetImage.setIcon(Resources.getIcon(Icons.SET_IMAGE));
+		btnSetImage.setText("DICT Set Image");
 
-		JButton btnMultipleFieldsCreation = new JButton();
-		btnMultipleFieldsCreation.addActionListener(actMultipleFieldsCreation);
-		btnMultipleFieldsCreation.setIcon(Resources
-				.getIcon(Icons.ADD_FIELD_BUTTON));
-		btnMultipleFieldsCreation.setToolTipText(Dictionary
-				.translate("add.field.button.tooltip"));
+		JButton btnAutoDetect = new JButton();
+		btnAutoDetect.setHorizontalAlignment(SwingConstants.LEFT);
+		// TODO Implement AutoDetect button
+		btnAutoDetect.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ErrorDialog(new Throwable("Method not implemented")).setVisible(true);;
+		}});
+		btnAutoDetect.setIcon(Resources.getIcon(Icons.CORNER_AUTO_DETECT));
+		btnAutoDetect.setText("DICT Auto detect");
 
-		JButton btnFieldDelete = new JButton();
-		btnFieldDelete.addActionListener(actFieldDelete);
-		btnFieldDelete.setIcon(Resources
-				.getIcon(Icons.REMOVE_FIELD_BUTTON));
-		btnFieldDelete.setToolTipText(Dictionary
-				.translate("remove.field.button.tooltip"));
-
-		JPanel pnlFieldsOptions = new JPanel();
-		pnlFieldsOptions.setOpaque(false);
-		pnlFieldsOptions.setLayout(new SpringLayout());
-		pnlFieldsOptions.add(btnMultipleFieldsCreation);
-		pnlFieldsOptions.add(btnFieldDelete);
-		SpringUtilities.makeGrid(pnlFieldsOptions, 2, 1, 1, 1, 3, 3);
-
-		JPanel pnlFieldList = new JPanel(new BorderLayout());
-		pnlFieldList.add(scpFields, BorderLayout.CENTER);
-		pnlFieldList.add(pnlFieldsOptions, BorderLayout.NORTH);
-
-		// Corners panel
 		JButton btnTopLeft = new JButton();
 		btnTopLeft.setHorizontalAlignment(SwingConstants.LEFT);
 		btnTopLeft.addActionListener(actCornerTopLeft);
@@ -236,37 +228,56 @@ public class UIOMRModel extends JPanel {
 		cornerLabels.put(Corner.BOTTOM_RIGHT, lblBottomRight);
 		updateCornerPosition();
 
-		JButton btnAutoDetect = new JButton();
-		btnAutoDetect.setHorizontalAlignment(SwingConstants.LEFT);
-		// TODO Implement AutoDetect button
-		btnAutoDetect.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new ErrorDialog(new Throwable("Method not implemented")).setVisible(true);;
-		}});
-		btnAutoDetect.setIcon(Resources.getIcon(Icons.CORNER_AUTO_DETECT));
-		btnAutoDetect.setText("DICT Auto detect");
-		
-		JPanel pnlCorners = new JPanel(new BorderLayout());
-		pnlCorners.setOpaque(false);
-		pnlCorners.setLayout(new SpringLayout());
-		pnlCorners.add(btnAutoDetect);
-		pnlCorners.add(btnTopLeft);
-		pnlCorners.add(lblTopLeft);
-		pnlCorners.add(btnTopRight);
-		pnlCorners.add(lblTopRight);
-		pnlCorners.add(btnBottomLeft);
-		pnlCorners.add(lblBottomLeft);
-		pnlCorners.add(btnBottomRight);
-		pnlCorners.add(lblBottomRight);
+		JPanel pnlGeneral = new JPanel(new BorderLayout());
+		pnlGeneral.setOpaque(false);
+		pnlGeneral.setLayout(new SpringLayout());
+		pnlGeneral.add(btnSetImage);
+		pnlGeneral.add(btnAutoDetect);
+		pnlGeneral.add(btnTopLeft);
+		pnlGeneral.add(lblTopLeft);
+		pnlGeneral.add(btnTopRight);
+		pnlGeneral.add(lblTopRight);
+		pnlGeneral.add(btnBottomLeft);
+		pnlGeneral.add(lblBottomLeft);
+		pnlGeneral.add(btnBottomRight);
+		pnlGeneral.add(lblBottomRight);
 
-		SpringUtilities.makeCompactGrid(pnlCorners, 9, 1, 1, 1, 3, 3);
+		SpringUtilities.makeCompactGrid( pnlGeneral, 10, 1, 1, 1, 3, 3);
 
-		// pnlModel.add(pnlFieldList, BorderLayout.WEST);
+		// Fields panel
+		lstFields = new JList<FormField>(lsmFields);
+		lstFields.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		JScrollPane scpFields = new JScrollPane(lstFields);
+
+		JButton btnMultipleFieldsCreation = new JButton();
+		btnMultipleFieldsCreation.addActionListener(actMultipleFieldsCreation);
+		btnMultipleFieldsCreation.setIcon(Resources
+				.getIcon(Icons.ADD_FIELD_BUTTON));
+		btnMultipleFieldsCreation.setToolTipText(Dictionary
+				.translate("add.field.button.tooltip"));
+
+		JButton btnFieldDelete = new JButton();
+		btnFieldDelete.addActionListener(actFieldDelete);
+		btnFieldDelete.setIcon(Resources
+				.getIcon(Icons.REMOVE_FIELD_BUTTON));
+		btnFieldDelete.setToolTipText(Dictionary
+				.translate("remove.field.button.tooltip"));
+
+		JPanel pnlFieldsOptions = new JPanel();
+		pnlFieldsOptions.setOpaque(false);
+		pnlFieldsOptions.setLayout(new SpringLayout());
+		pnlFieldsOptions.add(btnMultipleFieldsCreation);
+		pnlFieldsOptions.add(btnFieldDelete);
+		SpringUtilities.makeGrid(pnlFieldsOptions, 2, 1, 1, 1, 3, 3);
+
+		JPanel pnlFieldList = new JPanel(new BorderLayout());
+		pnlFieldList.setOpaque(false);
+		pnlFieldList.add(pnlFieldsOptions, BorderLayout.NORTH);
+		pnlFieldList.add(scpFields, BorderLayout.CENTER);
+
 		JSildeBar jslToolbar = new JSildeBar();
+		jslToolbar.addBar("DICT General", pnlGeneral);
 		jslToolbar.addBar("DICT Fields", pnlFieldList);
-		// TODO ADD Corner buttons here
-		jslToolbar.addBar("DICT Corners", pnlCorners);
 
 		pnlModel.add(jslToolbar, BorderLayout.WEST);
 

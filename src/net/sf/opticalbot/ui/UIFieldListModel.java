@@ -5,13 +5,17 @@ import javax.swing.AbstractListModel;
 import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.OMRModel;
 
-public class FieldListModel extends AbstractListModel<FormField> {
+/**
+ * This is a model for the field list displayed in UIOMRModel. It reflects the fields
+ * stored in the OMRModel instance, but does not trigger any change to that instance.
+ */
+public class UIFieldListModel extends AbstractListModel<FormField> {
 
 	private final OMRModel omrModel;
 
 	private static final long serialVersionUID = 1L;
 
-	public FieldListModel(OMRModel omrModel) {
+	public UIFieldListModel(OMRModel omrModel) {
 		this.omrModel = omrModel;
 	}
 
