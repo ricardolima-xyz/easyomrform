@@ -6,10 +6,13 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
+import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.ui.UIMain;
 import net.sf.opticalbot.ui.utilities.ErrorDialog;
 
-public class Main {
+public class App {
+
+	public static String version = "0.9";
 
 	/**
 	 * Launches the application.
@@ -25,13 +28,13 @@ public class Main {
 			new ErrorDialog(e);
 		}
 
-		// Initializing application model
-		final OMRContext model = new OMRContext();
+		// Initializing application context
+		OMRContext omrContext = new OMRContext();
 
-		// Initializing User Interface
+		// Initializing user interface
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new UIMain(model).setVisible(true);
+				new UIMain(omrContext).setVisible(true);
 			}
 		});
 	}

@@ -25,9 +25,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormPoint;
+import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Settings.Setting;

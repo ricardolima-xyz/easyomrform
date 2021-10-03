@@ -13,8 +13,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.FormField;
+import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.resources.Dictionary;
 

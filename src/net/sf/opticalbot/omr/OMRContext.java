@@ -1,12 +1,8 @@
-package net.sf.opticalbot;
+package net.sf.opticalbot.omr;
 
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.opticalbot.omr.FormField;
-import net.sf.opticalbot.omr.FormPoint;
-import net.sf.opticalbot.omr.OMRModel;
-import net.sf.opticalbot.omr.Orientation;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Settings;
 import net.sf.opticalbot.ui.ImageFrame;

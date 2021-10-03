@@ -22,10 +22,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
-import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.FormPoint;
+import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.OMRModelFactory;
 import net.sf.opticalbot.omr.Orientation;
 import net.sf.opticalbot.omr.exception.OMRModelSaveException;

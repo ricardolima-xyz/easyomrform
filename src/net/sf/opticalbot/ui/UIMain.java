@@ -19,7 +19,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
-import net.sf.opticalbot.OMRContext;
+import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.OMRModelFactory;
 import net.sf.opticalbot.omr.exception.OMRModelLoadException;
@@ -34,8 +34,8 @@ import net.sf.opticalbot.ui.utilities.HyperlinkException;
 public class UIMain extends JFrame {
 
 	private OMRModel omrModel;
-	private OMRContext omrContext;
 	private UIOMRModel uiOMRModel;
+	private final OMRContext omrContext;
 	private final UIMain instance = this;
 	private static final long serialVersionUID = 1L;
 

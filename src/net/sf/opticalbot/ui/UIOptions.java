@@ -16,7 +16,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 
-import net.sf.opticalbot.OMRContext;
+import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Settings;
