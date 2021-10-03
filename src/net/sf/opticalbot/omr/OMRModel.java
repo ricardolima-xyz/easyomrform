@@ -58,16 +58,9 @@ public class OMRModel {
 	public OMRModel(File imageFile, OMRModel template) throws IOException,
 			UnsupportedImageException {
 		this();
-		this.image = ImageIO.read(imageFile);
-
-		// We have to guarantee that the file passed as argument is a valid
-		// image file. If it's not, we have to throw an exception that is
-		// supposed to be caught on front-end code
-		if (this.image == null)
-			throw new UnsupportedImageException();
-
-		this.height = image.getHeight();
-		this.width = image.getWidth();
+		this.setImage(imageFile);
+		this.height = this.image.getHeight();
+		this.width = this.image.getWidth();
 		this.halfWidth = (int) (width / 2);
 		this.halfHeight = (int) (height / 2);
 		this.template = template;
@@ -591,6 +584,17 @@ public class OMRModel {
 
 	public void setImage(BufferedImage image) {
 		this.image = image;
+	}
+
+	public void setImage(File imageFile) throws UnsupportedImageException, IOException {
+		BufferedImage newImg = ImageIO.read(imageFile);
+		// We have to guarantee that the file passed as argument is a valid
+		// image file. If it's not, we have to throw an exception that is
+		// supposed to be caught on front-end code
+		if (newImg == null)
+			throw new UnsupportedImageException();
+		else
+			this.image = newImg;
 	}
 
 }

@@ -26,7 +26,7 @@ public class Main {
 		}
 
 		// Initializing application model
-		final OMRModelContext model = new OMRModelContext();
+		final OMRContext model = new OMRContext();
 
 		// Initializing User Interface
 		EventQueue.invokeLater(new Runnable() {

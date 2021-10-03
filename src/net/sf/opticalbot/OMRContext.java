@@ -12,7 +12,7 @@ import net.sf.opticalbot.resources.Settings;
 import net.sf.opticalbot.ui.ImageFrame;
 
 /** Main Application back-end. */
-public class OMRModelContext {
+public class OMRContext {
 
 	// TODO: CHANGE AND DELETE SF REPOSITORY
 	public static final String WEB_PAGE = "http://opticalbot.sourceforge.net/";
@@ -23,7 +23,7 @@ public class OMRModelContext {
 
 	private final Settings settings;
 
-	public OMRModelContext() {
+	public OMRContext() {
 		this.settings = new Settings();
 		String lang = settings.get(Settings.Setting.Language);
 		Dictionary.setDictionaryLanguage(lang);

@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import net.sf.opticalbot.OMRModelContext;
+import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.exception.UnsupportedImageException;
 import net.sf.opticalbot.resources.Dictionary;
@@ -35,7 +35,7 @@ public class UIScan extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JList<File> list;
 	private final FileListModel lsmFiles;
-	private final OMRModelContext model;
+	private final OMRContext model;
 	private JScrollPane scrollPane;
 	private ImageFrame uiView;
 	private int analyzedFileIndex = 0;
@@ -131,7 +131,7 @@ public class UIScan extends JPanel {
 						// filledForm, ImageFrame.Mode.MODIFY_POINTS);
 						// ImageFrame(model, image, template, mode,
 						// null);
-						uiView = new ImageFrame(model, filledForm.getImage(),
+						uiView = new ImageFrame(model, /*filledForm.getImage(),*/
 								ImageFrame.Mode.MODIFY_POINTS, null);
 						uiView.revalidate();
 						uiView.repaint();
@@ -233,7 +233,7 @@ public class UIScan extends JPanel {
 		}
 	};
 
-	public UIScan(final OMRModelContext model) {
+	public UIScan(final OMRContext model) {
 		this.setLayout(new BorderLayout());
 		this.model = model;
 		this.openedFiles = new LinkedList<File>();
@@ -278,8 +278,7 @@ public class UIScan extends JPanel {
 		this.list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.scrollPane = new JScrollPane(list);
 
-		this.uiView = new ImageFrame(model, null,
-				ImageFrame.Mode.MODIFY_POINTS, null);
+		this.uiView = new ImageFrame(model, ImageFrame.Mode.MODIFY_POINTS, null);
 
 		add(pnlOptions, BorderLayout.NORTH);
 		add(this.scrollPane, BorderLayout.WEST);

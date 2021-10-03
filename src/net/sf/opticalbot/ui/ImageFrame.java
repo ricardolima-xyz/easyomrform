@@ -25,7 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import net.sf.opticalbot.OMRModelContext;
+import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.ShapeType;
@@ -185,7 +185,7 @@ public class ImageFrame extends JPanel {
 	private int buttonPressed;
 	private final UIOMRModel uiOMRModel;
 	private final List<FormPoint> points;
-	private OMRModelContext model;
+	private OMRContext model;
 	public final ImagePanel imagePanel;
 	private ImageScrollPane scrollPane;
 	public final ImageStatusBar statusBar;
@@ -194,14 +194,14 @@ public class ImageFrame extends JPanel {
 	/**
 	 * Create the frame.
 	 */
-	public ImageFrame(OMRModelContext model, BufferedImage image, Mode mode, UIOMRModel uiOMRModel) {
+	public ImageFrame(OMRContext model, Mode mode, UIOMRModel uiOMRModel) {
 		this.model = model;
 		this.mode = mode;
 		this.points = new LinkedList<FormPoint>();
 		this.uiOMRModel = uiOMRModel;
 
 		this.setLayout(new BorderLayout());
-		imagePanel = new ImagePanel(image);
+		imagePanel = new ImagePanel();
 		scrollPane = new ImageScrollPane(imagePanel, this);
 		statusBar = new ImageStatusBar(this.mode);
 		add(scrollPane, BorderLayout.CENTER);
@@ -277,18 +277,18 @@ public class ImageFrame extends JPanel {
 		private int shapeSize;
 		private ShapeType shape;
 		private int border = 1;
-		private BufferedImage image;
 		private FormPoint temporaryPoint;
 
-		public ImagePanel(BufferedImage image) {
+		public ImagePanel() {
 			super();
-			this.image = image;
+			// TODO This will go to model itself
 			this.shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
 			this.shape = ShapeType.valueOf(model.getSettings().get(Setting.Shape));
 		}
 
 		@Override
 		public void paintComponent(Graphics g) {
+			BufferedImage image = model.getTemplate().getImage();
 			width = (image == null) ? 0 : image.getWidth();
 			height = (image == null) ? 0 : image.getHeight();
 			setPreferredSize(new Dimension(width, height));

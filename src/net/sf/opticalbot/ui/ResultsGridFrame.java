@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import net.sf.opticalbot.OMRModelContext;
+import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.resources.Dictionary;
@@ -47,7 +47,7 @@ public class ResultsGridFrame extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public ResultsGridFrame(OMRModelContext model, OMRModel filledForm) {
+	public ResultsGridFrame(OMRContext model, OMRModel filledForm) {
 
 		this.form = filledForm;
 

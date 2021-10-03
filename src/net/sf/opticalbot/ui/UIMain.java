@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
@@ -20,15 +19,13 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
-import net.sf.opticalbot.OMRModelContext;
+import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.OMRModelFactory;
 import net.sf.opticalbot.omr.exception.OMRModelLoadException;
-import net.sf.opticalbot.omr.exception.UnsupportedImageException;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Languages;
 import net.sf.opticalbot.resources.Settings;
-import net.sf.opticalbot.resources.Settings.Setting;
 import net.sf.opticalbot.ui.utilities.ErrorDialog;
 import net.sf.opticalbot.ui.utilities.Hyperlink;
 import net.sf.opticalbot.ui.utilities.HyperlinkException;
@@ -36,17 +33,17 @@ import net.sf.opticalbot.ui.utilities.HyperlinkException;
 /** Main Application Window */
 public class UIMain extends JFrame {
 
-	private final UIMain instance = this;
 	private OMRModel omrModel;
+	private OMRContext omrContext;
 	private UIOMRModel uiOMRModel;
-	private OMRModelContext model;
+	private final UIMain instance = this;
 	private static final long serialVersionUID = 1L;
 
 	/** Action for About screen */
 	public final ActionListener actAbout = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			showAboutScreen();
+			new UIAbout(instance).setVisible(true);
 		}
 	};
 
@@ -64,7 +61,7 @@ public class UIMain extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				Hyperlink.open(OMRModelContext.WEB_PAGE);
+				Hyperlink.open(OMRContext.WEB_PAGE);
 			} catch (HyperlinkException e1) {
 				new ErrorDialog(e1).setVisible(true);
 			}
@@ -76,44 +73,10 @@ public class UIMain extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			OMRModel omrModel = new OMRModel();
-			model.setTemplate(omrModel);
+			omrContext.setTemplate(omrModel);
 			instance.omrModel = omrModel;
-			UIOMRModel uiOMRModel = new UIOMRModel(model, instance);
+			UIOMRModel uiOMRModel = new UIOMRModel(omrContext, instance);
 			addUIOMRModel(uiOMRModel);
-		}
-	};
-
-	/** Action for new template */
-	// TODO Deprecated object
-	public final ActionListener actNewOld = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			UIFileChooser flc = new UIFileChooser();
-			flc.setMultiSelectionEnabled(false);
-			flc.setImagesFilter();
-
-			if (flc.showOpenDialog(instance) == JFileChooser.APPROVE_OPTION) {
-				File imageFile = flc.getSelectedFile();
-
-				try {
-					int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
-					int density = Integer.valueOf(model.getSettings().get(Setting.Density));
-
-					OMRModel omrModel = new OMRModel(imageFile);
-					omrModel.findCorners(threshold, density);
-					model.setTemplate(omrModel);
-
-					instance.omrModel = omrModel;
-					UIOMRModel uiOMRModel = new UIOMRModel(model, instance);
-					addUIOMRModel(uiOMRModel);
-				} catch (IOException e1) {
-					JOptionPane.showMessageDialog(null, Dictionary.translate("io.error"),
-							Dictionary.translate("io.error.popup.title"), JOptionPane.ERROR_MESSAGE);
-				} catch (UnsupportedImageException e2) {
-					JOptionPane.showMessageDialog(null, Dictionary.translate("DICT error.unsupported.image.type"),
-							Dictionary.translate("DICT error.popup.title"), JOptionPane.ERROR_MESSAGE);
-				}
-			}
 		}
 	};
 
@@ -131,8 +94,8 @@ public class UIMain extends JFrame {
 					File file = flc.getSelectedFile();
 					OMRModel loadedOMRModel = OMRModelFactory.load(file);
 					omrModel = loadedOMRModel;
-					model.setTemplate(omrModel);
-					UIOMRModel uiOMRModel = new UIOMRModel(model, instance);
+					omrContext.setTemplate(omrModel);
+					UIOMRModel uiOMRModel = new UIOMRModel(omrContext, instance);
 					addUIOMRModel(uiOMRModel);
 				} else {
 					// User clicked "cancel" on open file dialog. Aborting.
@@ -164,7 +127,7 @@ public class UIMain extends JFrame {
 	public final ActionListener actOptions = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			new UIOptions(model, instance).setVisible(true);
+			new UIOptions(omrContext, instance).setVisible(true);
 		}
 	};
 
@@ -173,8 +136,8 @@ public class UIMain extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JRadioButtonMenuItem object = (JRadioButtonMenuItem) e.getSource();
-			model.getSettings().set(Settings.Setting.Language, object.getName());
-			model.getSettings().store();
+			omrContext.getSettings().set(Settings.Setting.Language, object.getName());
+			omrContext.getSettings().store();
 			JOptionPane.showMessageDialog(null, Dictionary.translate("language.changed.message"),
 					Dictionary.translate("settings.popup.title"), JOptionPane.INFORMATION_MESSAGE);
 		}
@@ -183,8 +146,8 @@ public class UIMain extends JFrame {
 	/**
 	 * Constructor for UIMain - Main User Interface - Application Window.
 	 */
-	public UIMain(OMRModelContext model) {
-		this.model = model;
+	public UIMain(OMRContext omrContext) {
+		this.omrContext = omrContext;
 
 		// Window appearance and behavior
 		setTitle(Dictionary.translate("application.title"));
@@ -211,11 +174,6 @@ public class UIMain extends JFrame {
 		mniNew.setMnemonic(Dictionary.mnemonic("create.template.mnemonic"));
 		mniNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
 
-		JMenuItem mniNewOld = new JMenuItem(Dictionary.translate("NEW - DELETE ME"));
-		mniNewOld.addActionListener(actNewOld);
-		mniNewOld.setMnemonic(Dictionary.mnemonic("create.template.mnemonic"));
-		mniNewOld.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK));
-
 		JMenuItem mniOpen = new JMenuItem(Dictionary.translate("DICT Open model..."));
 		mniOpen.addActionListener(actOpen);
 		mniOpen.setMnemonic(Dictionary.mnemonic("load.template.mnemonic"));
@@ -235,7 +193,6 @@ public class UIMain extends JFrame {
 		JMenu mnuFile = new JMenu(Dictionary.translate("file.menu"));
 		mnuFile.setMnemonic(Dictionary.mnemonic("file.menu.mnemonic"));
 		mnuFile.add(mniNew);
-		mnuFile.add(mniNewOld);
 		mnuFile.add(mniOpen);
 		mnuFile.add(new JSeparator(JSeparator.HORIZONTAL));
 		mnuFile.add(mniSave);
@@ -243,7 +200,7 @@ public class UIMain extends JFrame {
 		mnuFile.add(new JSeparator(JSeparator.HORIZONTAL));
 		mnuFile.add(mniExit);
 
-		String language = model.getSettings().get(Settings.Setting.Language);
+		String language = omrContext.getSettings().get(Settings.Setting.Language);
 		JMenu menuBuilder = new JMenu(Dictionary.translate("language"));
 		JRadioButtonMenuItem languageItem;
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -275,11 +232,6 @@ public class UIMain extends JFrame {
 		setJMenuBar(mnbMain);
 		// Menu bar (end)
 
-	}
-
-	/** Shows the "about" screen. */
-	private void showAboutScreen() {
-		new UIAbout(this).setVisible(true);
 	}
 
 	/**

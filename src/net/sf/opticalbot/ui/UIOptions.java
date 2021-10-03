@@ -16,7 +16,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 
-import net.sf.opticalbot.OMRModelContext;
+import net.sf.opticalbot.OMRContext;
 import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Settings;
@@ -26,7 +26,7 @@ import net.sf.opticalbot.ui.utilities.SpringUtilities;
 public class UIOptions extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	private OMRModelContext model;
+	private OMRContext model;
 	private JSpinner thresholdValue;
 	private JSpinner densityValue;
 	private JComboBox<ShapeType> cbxShapeType;
@@ -63,7 +63,7 @@ public class UIOptions extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public UIOptions(OMRModelContext model, UIMain fraMain) {
+	public UIOptions(OMRContext model, UIMain fraMain) {
 		super(fraMain, true);
 
 		this.model = model;
