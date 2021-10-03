@@ -197,6 +197,7 @@ public class ImageFrame extends JPanel {
 		this.uiOMRModel = uiOMRModel;
 
 		this.setLayout(new BorderLayout());
+		this.setOpaque(false);
 		imagePanel = new ImagePanel();
 		scrollPane = new ImageScrollPane(imagePanel, this);
 		statusBar = new ImageStatusBar(this.mode);
@@ -216,10 +217,6 @@ public class ImageFrame extends JPanel {
 			lblPosition.setOpaque(false);
 			this.lblPosition = lblPosition;
 			add(lblPosition, BorderLayout.EAST);
-
-			// TODO: WHY THIS?
-			if (omrContext.getTemplate() != null)
-				showCornerPosition();
 		}
 
 		public void displayCursorPosition(FormPoint p) {
@@ -378,11 +375,6 @@ public class ImageFrame extends JPanel {
 		imagePanel.setTemporaryPoint(p);
 	}
 
-	public void showCornerPosition() {
-		if (uiOMRModel != null) // TODO WHY THIS CHECK?
-			uiOMRModel.updateCornerPosition();
-	}
-
 	public void clearTemporaryPoint() {
 		imagePanel.clearTemporaryPoint();
 	}
@@ -393,7 +385,7 @@ public class ImageFrame extends JPanel {
 
 	private void setCorner(Corner corner, FormPoint point) {
 		omrContext.getTemplate().setCornerAndUpdateDiagonalAndRotation(corner, point);
-		showCornerPosition();
+		uiOMRModel.updateCornerPosition();
 		repaint();
 	}
 

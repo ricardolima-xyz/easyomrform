@@ -62,11 +62,8 @@ public class UIScan extends JPanel {
 						selectFileAt(analyzedFileIndex);
 						File imageFile = openedFiles.get(analyzedFileIndex);
 
-						filledForm = new OMRModel(imageFile, model.formTemplate); // TODO
-						// TODO Why
-						// is
-						// filledForm
-						// global?
+						filledForm = new OMRModel(imageFile, model.formTemplate);
+						// TODO Why is filledForm global?
 						filledForm.findCorners(threshold, density);
 						filledForm.findPoints(threshold, density, shapeSize);
 						model.filledForms.put(imageFile.getName(), filledForm);

@@ -38,8 +38,7 @@ import javax.swing.JTextPane;
  * 
  * @author Pinaki Poddar
  *
- */
-@SuppressWarnings("serial")
+*/
 public class ErrorDialog extends JDialog {
     private static List<String> filters = Arrays.asList(
             "java.awt.", 
