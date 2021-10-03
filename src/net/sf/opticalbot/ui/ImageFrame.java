@@ -22,16 +22,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.ShapeType;
-import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Settings.Setting;
-import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
 public class ImageFrame extends JPanel {
 
@@ -175,7 +171,7 @@ public class ImageFrame extends JPanel {
 				setScrollBars(0, delta);
 			}
 			FormPoint p = getCursorPoint(e);
-			statusBar.displayPointPosition(p);
+			statusBar.displayCursorPosition(p);
 		}
 
 	};
@@ -185,7 +181,7 @@ public class ImageFrame extends JPanel {
 	private int buttonPressed;
 	private final UIOMRModel uiOMRModel;
 	private final List<FormPoint> points;
-	private OMRContext model;
+	private OMRContext omrContext;
 	public final ImagePanel imagePanel;
 	private ImageScrollPane scrollPane;
 	public final ImageStatusBar statusBar;
@@ -194,8 +190,8 @@ public class ImageFrame extends JPanel {
 	/**
 	 * Create the frame.
 	 */
-	public ImageFrame(OMRContext model, Mode mode, UIOMRModel uiOMRModel) {
-		this.model = model;
+	public ImageFrame(OMRContext omrContext, Mode mode, UIOMRModel uiOMRModel) {
+		this.omrContext = omrContext;
 		this.mode = mode;
 		this.points = new LinkedList<FormPoint>();
 		this.uiOMRModel = uiOMRModel;
@@ -204,40 +200,30 @@ public class ImageFrame extends JPanel {
 		imagePanel = new ImagePanel();
 		scrollPane = new ImageScrollPane(imagePanel, this);
 		statusBar = new ImageStatusBar(this.mode);
+		add(statusBar, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);
-		add(statusBar, BorderLayout.SOUTH);
 	}
 
 	public class ImageStatusBar extends JPanel {
 		private static final long serialVersionUID = 1L;
 
-		private final JTextField txfXPosition;
-		private final JTextField txfYPosition;
+		private final JLabel lblPosition;
 
 		public ImageStatusBar(Mode mode) {
-			super();
-			SpringLayout layout = new SpringLayout();
-			setLayout(layout);
+			super(new BorderLayout());
+			setOpaque(false);
+			JLabel lblPosition = new JLabel(new FormPoint().toString(), JLabel.RIGHT);
+			lblPosition.setOpaque(false);
+			this.lblPosition = lblPosition;
+			add(lblPosition, BorderLayout.EAST);
 
-			this.txfXPosition = new JTextField(10);
-			this.txfXPosition.setEditable(false);
-			this.txfYPosition = new JTextField(10);
-			this.txfYPosition.setEditable(false);
-
-			if (model.getTemplate() != null)
+			// TODO: WHY THIS?
+			if (omrContext.getTemplate() != null)
 				showCornerPosition();
-
-			add(new JLabel(Dictionary.translate("x.cursor.position.label")));
-			add(txfXPosition);
-			add(new JLabel(Dictionary.translate("y.cursor.position.label")));
-			add(txfYPosition);
-
-			SpringUtilities.makeCompactGrid(this, 1, 4, 1, 1, 3, 3);
 		}
 
-		public void displayPointPosition(FormPoint p) {
-			txfXPosition.setText(Double.toString(p.getX()));
-			txfYPosition.setText(Double.toString(p.getY()));
+		public void displayCursorPosition(FormPoint p) {
+			lblPosition.setText(p.toString());
 		}
 
 	}
@@ -281,26 +267,27 @@ public class ImageFrame extends JPanel {
 
 		public ImagePanel() {
 			super();
+			setOpaque(false);
 			// TODO This will go to model itself
-			this.shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
-			this.shape = ShapeType.valueOf(model.getSettings().get(Setting.Shape));
+			this.shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
+			this.shape = ShapeType.valueOf(omrContext.getSettings().get(Setting.Shape));
 		}
 
 		@Override
 		public void paintComponent(Graphics g) {
-			BufferedImage image = model.getTemplate().getImage();
+			BufferedImage image = omrContext.getTemplate().getImage();
 			width = (image == null) ? 0 : image.getWidth();
 			height = (image == null) ? 0 : image.getHeight();
 			setPreferredSize(new Dimension(width, height));
 			g.drawImage(image, 0, 0, width, height, this);
-			if (model.getTemplate() != null) {
+			if (omrContext.getTemplate() != null) {
 				drawPoints(g);
 				drawCorners(g);
 			}
 		}
 
 		private void drawPoints(Graphics g) {
-			for (FormPoint point : model.getTemplate().getFieldsPoints()) {
+			for (FormPoint point : omrContext.getTemplate().getFieldsPoints()) {
 				drawPoint(g, point);
 			}
 
@@ -328,7 +315,7 @@ public class ImageFrame extends JPanel {
 		}
 
 		public void drawCorners(Graphics g) {
-			Map<Corner, FormPoint> corners = model.getTemplate().getCorners();
+			Map<Corner, FormPoint> corners = omrContext.getTemplate().getCorners();
 			if (!corners.isEmpty()) {
 				Graphics2D g2d = (Graphics2D) g.create();
 				g2d.setColor(new Color(0, 255, 0, 128));
@@ -405,7 +392,7 @@ public class ImageFrame extends JPanel {
 	}
 
 	private void setCorner(Corner corner, FormPoint point) {
-		model.getTemplate().setCornerAndUpdateDiagonalAndRotation(corner, point);
+		omrContext.getTemplate().setCornerAndUpdateDiagonalAndRotation(corner, point);
 		showCornerPosition();
 		repaint();
 	}
@@ -417,7 +404,7 @@ public class ImageFrame extends JPanel {
 
 	private FormPoint showCursorPosition(MouseEvent e) {
 		FormPoint p = getCursorPoint(e);
-		statusBar.displayPointPosition(p);
+		statusBar.displayCursorPosition(p);
 		return p;
 	}
 
@@ -442,13 +429,13 @@ public class ImageFrame extends JPanel {
 						FormPoint p1 = points.get(0);
 						points.clear();
 
-						FormPoint orig = model.getTemplate().getCorners().get(Corner.TOP_LEFT);
-						double rotation = model.getTemplate().getRotation();
+						FormPoint orig = omrContext.getTemplate().getCorners().get(Corner.TOP_LEFT);
+						double rotation = omrContext.getTemplate().getRotation();
 
 						p1.relativePositionTo(orig, rotation);
 						p.relativePositionTo(orig, rotation);
 
-						HashMap<String, Double> delta = model.calcDelta(rows, values, uiOMRModel.getOrientation(), p1,
+						HashMap<String, Double> delta = omrContext.calcDelta(rows, values, uiOMRModel.getOrientation(), p1,
 								p);
 
 						List<FormPoint> pts = new LinkedList<FormPoint>();

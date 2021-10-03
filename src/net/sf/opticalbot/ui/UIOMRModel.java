@@ -26,9 +26,7 @@ import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRContext;
-import net.sf.opticalbot.omr.OMRModelFactory;
 import net.sf.opticalbot.omr.Orientation;
-import net.sf.opticalbot.omr.exception.OMRModelSaveException;
 import net.sf.opticalbot.omr.exception.UnsupportedImageException;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Icons;
@@ -135,44 +133,6 @@ public class UIOMRModel extends JPanel {
 				break;
 			default:
 				break;
-			}
-		}
-	};
-
-	public final ActionListener actSaveTemplate = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-
-			File file = omrContext.getTemplate().getFile();
-			if (file == null) {
-				// OMRModel has not been saved before. Showing File Dialog
-				// so user can choose a file name.
-				UIFileChooser flc = new UIFileChooser();
-				flc.setMultiSelectionEnabled(false);
-				flc.setTemplateFilter();
-				int outcome = flc.showSaveDialog(uiMain);
-				if (outcome == JFileChooser.APPROVE_OPTION) {
-					// User selected a file name. Setting this file to OMRmodel.
-					file = flc.getSelectedFile();
-					omrContext.getTemplate().setFile(file);
-				} else {
-					// User clicked "cancel" button on save dialog. Aborting.
-					return;
-				}
-			}
-			// At this point, we can guarantee that the current OMRModel has a
-			// file associated with it.
-			try {
-				OMRModelFactory.save(omrContext.getTemplate());
-				JOptionPane.showMessageDialog(null,
-						Dictionary.translate("template.saved"),
-						Dictionary.translate("template.saved.popup.title"),
-						JOptionPane.INFORMATION_MESSAGE);
-			} catch (OMRModelSaveException e1) {
-				JOptionPane.showMessageDialog(null,
-						Dictionary.translate("template.not.saved"),
-						Dictionary.translate("template.not.saved.popup.title"),
-						JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 	};
@@ -313,17 +273,6 @@ public class UIOMRModel extends JPanel {
 		this.uiImage = new ImageFrame(omrContext, ImageFrame.Mode.VIEW, this);
 
 		pnlModel.add(uiImage, BorderLayout.CENTER);
-
-		// Options panel at north
-		JButton btnSave = new JButton();
-		btnSave.addActionListener(actSaveTemplate);
-		btnSave.setText(Dictionary.translate("save.template.button"));
-
-		JPanel pnlOMRModelOptions = new JPanel();
-		pnlOMRModelOptions.setLayout(new SpringLayout());
-		pnlOMRModelOptions.add(btnSave);
-		SpringUtilities.makeCompactGrid(pnlOMRModelOptions, 1, 1, 3, 3, 3, 3);
-		pnlModel.add(pnlOMRModelOptions, BorderLayout.NORTH);
 
 		JTabbedPane tbpOMRModel = new JTabbedPane();
 		tbpOMRModel.add("DICT Model", pnlModel);

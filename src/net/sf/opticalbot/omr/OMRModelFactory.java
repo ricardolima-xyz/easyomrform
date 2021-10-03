@@ -198,14 +198,16 @@ public class OMRModelFactory {
 			}
 
 			// image element
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(omrModel.getImage(), "png", baos);
-			byte[] byteArray = baos.toByteArray();
-			String imageDataString = Base64.getEncoder().encodeToString(
-					byteArray);
-			Element imageElement = doc.createElement("image");
-			imageElement.setTextContent(imageDataString);
-			templateElement.appendChild(imageElement);
+			if (omrModel.getImage() != null) {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write(omrModel.getImage(), "png", baos);
+				byte[] byteArray = baos.toByteArray();
+				String imageDataString = Base64.getEncoder().encodeToString(
+						byteArray);
+				Element imageElement = doc.createElement("image");
+				imageElement.setTextContent(imageDataString);
+				templateElement.appendChild(imageElement);
+			}
 
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();

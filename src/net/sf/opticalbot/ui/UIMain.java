@@ -24,6 +24,7 @@ import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.OMRModelFactory;
 import net.sf.opticalbot.omr.exception.OMRModelLoadException;
+import net.sf.opticalbot.omr.exception.OMRModelSaveException;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Languages;
 import net.sf.opticalbot.resources.Settings;
@@ -34,8 +35,10 @@ import net.sf.opticalbot.ui.utilities.HyperlinkException;
 /** Main Application Window */
 public class UIMain extends JFrame {
 
-	private OMRModel omrModel;
 	private UIOMRModel uiOMRModel;
+	private JMenuItem mniClose;
+	private JMenuItem mniSave;
+	private JMenuItem mniSaveAs;
 	private final OMRContext omrContext;
 	private final UIMain instance = this;
 	private static final long serialVersionUID = 1L;
@@ -75,7 +78,6 @@ public class UIMain extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			OMRModel omrModel = new OMRModel();
 			omrContext.setTemplate(omrModel);
-			instance.omrModel = omrModel;
 			UIOMRModel uiOMRModel = new UIOMRModel(omrContext, instance);
 			addUIOMRModel(uiOMRModel);
 		}
@@ -92,10 +94,8 @@ public class UIMain extends JFrame {
 				int returnValue = flc.showOpenDialog(null);
 
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File file = flc.getSelectedFile();
-					OMRModel loadedOMRModel = OMRModelFactory.load(file);
-					omrModel = loadedOMRModel;
-					omrContext.setTemplate(omrModel);
+					OMRModel loadedOMRModel = OMRModelFactory.load(flc.getSelectedFile());
+					omrContext.setTemplate(loadedOMRModel);
 					UIOMRModel uiOMRModel = new UIOMRModel(omrContext, instance);
 					addUIOMRModel(uiOMRModel);
 				} else {
@@ -111,24 +111,66 @@ public class UIMain extends JFrame {
 	public final ActionListener actClose = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-
+			omrContext.setTemplate(null);
+			removeUIOMRModel();
 		}
 	};
 
 	public final ActionListener actSave = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-
+			try {
+				File file = omrContext.getTemplate().getFile();
+				if (file == null) {
+					// OMRModel has not been saved before. Showing File Dialog
+					UIFileChooser flc = new UIFileChooser();
+					flc.setTemplateFilter();
+					if (flc.showSaveDialog(instance) == JFileChooser.APPROVE_OPTION) {
+						file = flc.getSelectedFile(); // User selected a file name.
+					} else {
+						return; // User clicked "cancel". Aborting.
+					}
+				}
+				// At this point, OMRModel has a file associated with it.
+				omrContext.getTemplate().setFile(file);
+				OMRModelFactory.save(omrContext.getTemplate());
+				JOptionPane.showMessageDialog(null,
+						Dictionary.translate("template.saved"),
+						Dictionary.translate("template.saved.popup.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+			} catch (OMRModelSaveException e1) {
+				JOptionPane.showMessageDialog(null,
+						Dictionary.translate("template.not.saved"),
+						Dictionary.translate("template.not.saved.popup.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 	};
 
 	public final ActionListener actSaveAs = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-
+			try {
+				UIFileChooser flc = new UIFileChooser();
+				flc.setTemplateFilter();
+				if (flc.showSaveDialog(instance) == JFileChooser.APPROVE_OPTION) {
+					// User selected a file name.
+					File file = flc.getSelectedFile();
+					omrContext.getTemplate().setFile(file);
+					OMRModelFactory.save(omrContext.getTemplate());
+					JOptionPane.showMessageDialog(null,
+						Dictionary.translate("template.saved"),
+						Dictionary.translate("template.saved.popup.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					return; // User clicked "cancel". Aborting.
+				}
+			} catch (OMRModelSaveException e1) {
+				JOptionPane.showMessageDialog(null,
+						Dictionary.translate("template.not.saved"),
+						Dictionary.translate("template.not.saved.popup.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 	};
 
@@ -186,14 +228,20 @@ public class UIMain extends JFrame {
 		mniOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
 
 		JMenuItem mniClose = new JMenuItem(Dictionary.translate("DICT Close model..."));
+		mniClose.setEnabled(false);
 		mniClose.addActionListener(actClose);
 		mniClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.CTRL_DOWN_MASK));
+		this.mniClose = mniClose;
 
 		JMenuItem mniSave = new JMenuItem(Dictionary.translate("DICT Save model"));
+		mniSave.setEnabled(false);
 		mniSave.addActionListener(actSave);
+		this.mniSave = mniSave;
 
 		JMenuItem mniSaveAs = new JMenuItem(Dictionary.translate("DICT Save model as..."));
+		mniSaveAs.setEnabled(false);
 		mniSaveAs.addActionListener(actSaveAs);
+		this.mniSaveAs = mniSaveAs;
 
 		JMenuItem mniExit = new JMenuItem(Dictionary.translate("exit"));
 		mniExit.addActionListener(actExit);
@@ -250,8 +298,21 @@ public class UIMain extends JFrame {
 		if (this.uiOMRModel != null)
 			this.remove(this.uiOMRModel);
 		this.uiOMRModel = newUIOMRModel;
+		this.mniClose.setEnabled(true);
+		this.mniSave.setEnabled(true);
+		this.mniSaveAs.setEnabled(true);
 		add(newUIOMRModel, BorderLayout.CENTER);
 		revalidate();
+		repaint();
+	}
+
+	private void removeUIOMRModel() {
+		this.remove(this.uiOMRModel);
+		this.mniClose.setEnabled(false);
+		this.mniSave.setEnabled(false);
+		this.mniSaveAs.setEnabled(false);
+		revalidate();
+		repaint();
 	}
 
 }

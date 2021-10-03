@@ -61,7 +61,7 @@ public class UIAbout extends JDialog {
 	 */
 	public UIAbout(Frame owner) {
 		super(owner, true);
-		this.setTitle(Dictionary.translate("about.formscanner"));
+		this.setTitle(Dictionary.translate("about.title"));
 		this.setResizable(false);
 
 		JPanel pnlAbout = getAboutPanel();
@@ -77,8 +77,8 @@ public class UIAbout extends JDialog {
 		SpringUtilities.makeCompactGrid(pnlButtons, 1, 1, 3, 3, 3, 3);
 
 		JTabbedPane tbpAbout = new JTabbedPane(JTabbedPane.TOP);
-		tbpAbout.addTab(Dictionary.translate("about.tab.name"), pnlAbout);
-		tbpAbout.addTab(Dictionary.translate("license.tab.name"), pnlLicense);
+		tbpAbout.addTab(Dictionary.translate("about.tab.about"), pnlAbout);
+		tbpAbout.addTab(Dictionary.translate("about.tab.license"), pnlLicense);
 
 		getContentPane().add(tbpAbout, BorderLayout.CENTER);
 		getContentPane().add(pnlButtons, BorderLayout.SOUTH);
