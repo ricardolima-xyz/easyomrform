@@ -139,7 +139,7 @@ public class UIOMRModel extends JPanel {
 
 	private final UIMain uiMain;
 	private UIFieldListModel lsmFields;
-	private JList<FormField> lstFields;
+	public JList<FormField> lstFields;
 	private final OMRContext omrContext;
 	private int autoNumberingStart = 1;
 	private ImageFrame uiImage;

@@ -40,6 +40,10 @@ public class OMRModel {
 	private int width;
 
 	public OMRModel() {
+		this.width = DEFAULT_WIDTH;
+		this.height = DEFAULT_HEIGHT;
+		this.halfWidth = (int) (DEFAULT_WIDTH / 2);
+		this.halfHeight = (int) (DEFAULT_HEIGHT / 2);
 		this.corners = new HashMap<Corner, FormPoint>();
 		this.corners.put(Corner.TOP_LEFT, new FormPoint(0, 0));
 		this.corners.put(Corner.TOP_RIGHT, new FormPoint(DEFAULT_WIDTH, 0));
@@ -59,10 +63,6 @@ public class OMRModel {
 			UnsupportedImageException {
 		this();
 		this.setImage(imageFile);
-		this.height = this.image.getHeight();
-		this.width = this.image.getWidth();
-		this.halfWidth = (int) (width / 2);
-		this.halfHeight = (int) (height / 2);
 		this.template = template;
 		this.corners.put(Corner.TOP_LEFT, new FormPoint(0, 0));
 		this.corners.put(Corner.TOP_RIGHT, new FormPoint(width, 0));
@@ -535,45 +535,6 @@ public class OMRModel {
 		this.rotation = rotation;
 	}
 
-	// TODO: REWRITE THIS
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-
-		builder.append("[\r\n[Rotation:").append(rotation).append("]")
-				.append("\r\n[Corners: ");
-
-		// corner elements
-		for (Entry<Corner, FormPoint> corner : corners.entrySet()) {
-			Corner cornerPosition = corner.getKey();
-			FormPoint cornerValue = corner.getValue();
-
-			builder.append("\n\t[").append(cornerPosition.name()).append(' ')
-					.append(cornerValue.toString()).append(']');
-		}
-
-		builder.append("\n]").append("\r\n[Fields: ");
-
-		// field elements
-		for (FormField field : fields) {
-
-			builder = builder.append("\r\n[name:").append(field.getName())
-					.append(" is multiple:").append(field.isMultiple())
-					.append(" values: ");
-
-			// value elements
-			for (Entry<String, FormPoint> point : field.getPoints().entrySet()) {
-				builder.append("\r\n[response:").append(point.getKey())
-						.append(" ").append(point.getValue().toString())
-						.append(" ]");
-			}
-
-			builder = builder.append("]");
-		}
-
-		builder.append("]").append("]");
-		return builder.toString();
-	}
-
 	public File getFile() {
 		return this.templateFile;
 	}
@@ -584,6 +545,10 @@ public class OMRModel {
 
 	public void setImage(BufferedImage image) {
 		this.image = image;
+		this.height = image.getHeight();
+		this.width = image.getWidth();
+		this.halfWidth = (int) (image.getHeight() / 2);
+		this.halfHeight = (int) (image.getWidth() / 2);
 	}
 
 	public void setImage(File imageFile) throws UnsupportedImageException, IOException {
@@ -593,8 +558,17 @@ public class OMRModel {
 		// supposed to be caught on front-end code
 		if (newImg == null)
 			throw new UnsupportedImageException();
-		else
-			this.image = newImg;
+		else {
+			this.setImage(newImg);
+		}
+	}
+
+	public int getHeight() {
+		return this.height;
+	}
+	
+	public int getWidth() {
+		return this.width;
 	}
 
 }

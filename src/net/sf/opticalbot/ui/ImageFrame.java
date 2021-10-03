@@ -3,7 +3,6 @@ package net.sf.opticalbot.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -24,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.sf.opticalbot.omr.Corner;
+import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.ShapeType;
@@ -255,32 +255,25 @@ public class ImageFrame extends JPanel {
 
 	private class ImagePanel extends JPanel {
 		private static final long serialVersionUID = 1L;
-		private int width;
-		private int height;
-		private int shapeSize;
-		private ShapeType shape;
-		private int border = 1;
 		private FormPoint temporaryPoint;
 
 		public ImagePanel() {
 			super();
 			setOpaque(false);
-			// TODO This will go to model itself
-			this.shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
-			this.shape = ShapeType.valueOf(omrContext.getSettings().get(Setting.Shape));
 		}
 
 		@Override
 		public void paintComponent(Graphics g) {
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, omrContext.getTemplate().getWidth(), omrContext.getTemplate().getHeight());
+			
 			BufferedImage image = omrContext.getTemplate().getImage();
-			width = (image == null) ? 0 : image.getWidth();
-			height = (image == null) ? 0 : image.getHeight();
-			setPreferredSize(new Dimension(width, height));
-			g.drawImage(image, 0, 0, width, height, this);
-			if (omrContext.getTemplate() != null) {
-				drawPoints(g);
-				drawCorners(g);
+			if (image != null) {
+				g.drawImage(image, 0, 0, omrContext.getTemplate().getWidth(), omrContext.getTemplate().getHeight(), this);
 			}
+			
+			drawPoints(g);
+			drawCorners(g);
 		}
 
 		private void drawPoints(Graphics g) {
@@ -297,11 +290,24 @@ public class ImageFrame extends JPanel {
 
 		private void drawPoint(Graphics g, FormPoint point) {
 			if (point != null) {
-				int x = (int) point.getX() - border;
-				int y = (int) point.getY() - border;
+				// TODO Model will contain shape size and shape type
+				int shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
+				ShapeType shape = ShapeType.valueOf(omrContext.getSettings().get(Setting.Shape));
+				int x = (int) point.getX();
+				int y = (int) point.getY();
 
 				Graphics g1 = g.create();
 				g1.setColor(Color.RED);
+
+				// TODO THIS IS NOT WORKING...
+				// If the point is from a selected field, paint it in other color
+				List<FormField> selection = uiOMRModel.lstFields.getSelectedValuesList();
+				for (FormField selectedFormField : selection) {
+					for (FormPoint selectedFormPoint : selectedFormField.getPoints().values())
+						if (point.equals(selectedFormPoint))
+							g1.setColor(Color.ORANGE);
+				}
+				
 				if (shape.equals(ShapeType.CIRCLE)) {
 					g1.fillArc(x - shapeSize, y - shapeSize, 2 * shapeSize, 2 * shapeSize, 0, 360);
 				} else if (shape.equals(ShapeType.SQUARE)) {
@@ -327,14 +333,6 @@ public class ImageFrame extends JPanel {
 				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p3.getX(), (int) p3.getY());
 				g2d.dispose();
 			}
-		}
-
-		public int getImageWidth() {
-			return width;
-		}
-
-		public int getImageHeight() {
-			return height;
 		}
 
 		public void setTemporaryPoint(FormPoint p) {
@@ -365,10 +363,6 @@ public class ImageFrame extends JPanel {
 
 	public Mode getMode() {
 		return mode;
-	}
-
-	public Dimension getImageSize() {
-		return new Dimension(imagePanel.getImageWidth(), imagePanel.getImageHeight());
 	}
 
 	public void setTemporaryPoint(FormPoint p) {
