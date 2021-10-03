@@ -19,6 +19,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
+import net.sf.opticalbot.App;
 import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.OMRModelFactory;
@@ -61,7 +62,7 @@ public class UIMain extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				Hyperlink.open(OMRContext.WEB_PAGE);
+				Hyperlink.open(App.appWebSite);
 			} catch (HyperlinkException e1) {
 				new ErrorDialog(e1).setVisible(true);
 			}
@@ -104,6 +105,14 @@ public class UIMain extends JFrame {
 			} catch (OMRModelLoadException e1) {
 				new ErrorDialog(e1).setVisible(true);
 			}
+		}
+	};
+
+	public final ActionListener actClose = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+
 		}
 	};
 
@@ -150,7 +159,7 @@ public class UIMain extends JFrame {
 		this.omrContext = omrContext;
 
 		// Window appearance and behavior
-		setTitle(Dictionary.translate("application.title"));
+		setTitle(App.appName);
 		setSize(Toolkit.getDefaultToolkit().getScreenSize());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
@@ -165,19 +174,20 @@ public class UIMain extends JFrame {
 		mniAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, InputEvent.ALT_DOWN_MASK));
 
 		JMenu mnuHelp = new JMenu(Dictionary.translate("help.menu"));
-		mnuHelp.setMnemonic(Dictionary.mnemonic("help.menu.mnemonic"));
 		mnuHelp.add(mniHelp);
 		mnuHelp.add(mniAbout);
 
 		JMenuItem mniNew = new JMenuItem(Dictionary.translate("DICT New model"));
 		mniNew.addActionListener(actNew);
-		mniNew.setMnemonic(Dictionary.mnemonic("create.template.mnemonic"));
-		mniNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
+		mniNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
 
 		JMenuItem mniOpen = new JMenuItem(Dictionary.translate("DICT Open model..."));
 		mniOpen.addActionListener(actOpen);
-		mniOpen.setMnemonic(Dictionary.mnemonic("load.template.mnemonic"));
-		mniOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
+		mniOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
+
+		JMenuItem mniClose = new JMenuItem(Dictionary.translate("DICT Close model..."));
+		mniClose.addActionListener(actClose);
+		mniClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.CTRL_DOWN_MASK));
 
 		JMenuItem mniSave = new JMenuItem(Dictionary.translate("DICT Save model"));
 		mniSave.addActionListener(actSave);
@@ -187,13 +197,12 @@ public class UIMain extends JFrame {
 
 		JMenuItem mniExit = new JMenuItem(Dictionary.translate("exit"));
 		mniExit.addActionListener(actExit);
-		mniExit.setMnemonic(Dictionary.mnemonic("exit.mnemonic"));
-		mniExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
+		mniExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_DOWN_MASK));
 
 		JMenu mnuFile = new JMenu(Dictionary.translate("file.menu"));
-		mnuFile.setMnemonic(Dictionary.mnemonic("file.menu.mnemonic"));
 		mnuFile.add(mniNew);
 		mnuFile.add(mniOpen);
+		mnuFile.add(mniClose);
 		mnuFile.add(new JSeparator(JSeparator.HORIZONTAL));
 		mnuFile.add(mniSave);
 		mnuFile.add(mniSaveAs);
@@ -221,7 +230,6 @@ public class UIMain extends JFrame {
 		mniOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, InputEvent.CTRL_DOWN_MASK));
 
 		JMenu mnuSettings = new JMenu(Dictionary.translate("settings.menu"));
-		mnuSettings.setMnemonic(Dictionary.mnemonic("settings.menu.mnemonic"));
 		mnuSettings.add(mniLanguage);
 		mnuSettings.add(mniOptions);
 
@@ -231,7 +239,6 @@ public class UIMain extends JFrame {
 		mnbMain.add(mnuHelp);
 		setJMenuBar(mnbMain);
 		// Menu bar (end)
-
 	}
 
 	/**

@@ -23,6 +23,7 @@ import javax.swing.SpringLayout;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import net.sf.opticalbot.App;
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Resources;
 import net.sf.opticalbot.ui.utilities.ErrorDialog;
@@ -134,24 +135,26 @@ public class UIAbout extends JDialog {
 	}
 
 	private JPanel getAboutPanel() {
-
 		JEditorPane aboutTextPanel = getAboutTextPanel();
-
 		JPanel pnlAbout = new JPanel(new BorderLayout());
 		pnlAbout.add(aboutTextPanel, BorderLayout.CENTER);
 		return pnlAbout;
 	}
 
 	private JEditorPane getAboutTextPanel() {
+		StringBuilder aboutText = new StringBuilder();
+		aboutText.append("<h1 align=\"center\">"+App.appName+"</h1>");
+		aboutText.append("<h3 align=\"center\">"+Dictionary.translate("about.version")+App.appVersion+"</h1>");
+		aboutText.append("<h3 align=\"center\">"+Dictionary.translate("about.author")+"Luiz Ricardo de Lima</h1>");
+		aboutText.append("<p  align=\"center\">"+Dictionary.translate("about.text")+"</p>");
 		JEditorPane text = new JEditorPane();
 		text.setAlignmentX(Component.CENTER_ALIGNMENT);
 		text.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		text.setContentType("text/html");
 		text.setOpaque(true);
 		text.addHyperlinkListener(hylAbout);
-		text.setText(Dictionary.translate("about.text"));
+		text.setText(aboutText.toString());
 		text.setEditable(false);
-
 		return text;
 	}
 

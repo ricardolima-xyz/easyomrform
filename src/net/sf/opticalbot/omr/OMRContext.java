@@ -10,9 +10,6 @@ import net.sf.opticalbot.ui.ImageFrame;
 /** Main Application back-end. */
 public class OMRContext {
 
-	// TODO: CHANGE AND DELETE SF REPOSITORY
-	public static final String WEB_PAGE = "http://opticalbot.sourceforge.net/";
-
 	public HashMap<String, OMRModel> filledForms = new HashMap<String, OMRModel>();
 	public boolean firstPass = true; // TODO whatis this?
 	public OMRModel formTemplate;

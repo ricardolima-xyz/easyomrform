@@ -51,7 +51,4 @@ public class Dictionary extends Properties {
 		return i18n.getProperty(key, key);
 	}
 
-	public static char mnemonic(String key) {
-		return i18n.getProperty(key, key).charAt(0);
-	}
 }
