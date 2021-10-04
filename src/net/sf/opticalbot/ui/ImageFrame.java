@@ -447,7 +447,7 @@ public class ImageFrame extends JPanel {
 			case MODIFY_POINTS:
 				// TODO: REIMPLEMENT METHOD
 				JOptionPane.showMessageDialog(null,
-						"It was supposed to call model.filledForm.addPoint(p); and UIMain's createResultsGridFrame(). Showing this message because refactoring is in progress.");
+						"It was supposed to call model.filledForm.addPoint(p); Showing this message because refactoring is in progress.");
 
 				break;
 			default:

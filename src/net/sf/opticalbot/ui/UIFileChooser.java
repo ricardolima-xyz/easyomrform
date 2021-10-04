@@ -1,10 +1,6 @@
 package net.sf.opticalbot.ui;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -12,8 +8,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import net.sf.opticalbot.omr.FormField;
-import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.resources.Dictionary;
 
 public class UIFileChooser extends JFileChooser {
@@ -87,31 +81,5 @@ public class UIFileChooser extends JFileChooser {
 		FileNameExtensionFilter templateFilter = new FileNameExtensionFilter(
 				Dictionary.translate("template.file"), "xtmpl");
 		setFileFilter(templateFilter);
-	}
-
-	public ArrayList<HashMap<String, String>> getResults(
-			HashMap<String, OMRModel> filledForms, String[] header) {
-		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-		for (Entry<String, OMRModel> filledForm : filledForms.entrySet()) {
-			OMRModel form = filledForm.getValue();
-			List<FormField> fields = form.getFields();
-
-			HashMap<String, String> result = new HashMap<String, String>();
-			result.put(header[0], filledForm.getKey());
-			for (int i = 1; i < header.length; i++) {
-				FormField field = fields.get(i - 1);
-				result.put(header[i], field.getValues());
-			}
-
-			results.add(result);
-		}
-		return results;
-	}
-
-	public String[] getHeader(HashMap<String, OMRModel> filledForms) {
-		String aKey = (String) filledForms.keySet().toArray()[0];
-		OMRModel aForm = filledForms.get(aKey);
-		String[] header = (String[]) aForm.getHeader();
-		return header;
 	}
 }

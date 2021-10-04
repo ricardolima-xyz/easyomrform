@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JButton;
@@ -18,9 +20,10 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
+import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.omr.exception.UnsupportedImageException;
@@ -42,7 +45,7 @@ public class UIScan extends JPanel {
 	public OMRModel filledForm;
 	public boolean firstPass = true; // TODO whatis this?
 	public final List<File> openedFiles;
-	public final JTextArea output;
+	public final JTable tblResult;
 
 	/** */
 	public final ActionListener actAnalyzeFilesAll = new ActionListener() {
@@ -74,13 +77,14 @@ public class UIScan extends JPanel {
 					// TODO HELP!
 					// Move the functions getResults and getHeader to appropriate locations
 					// Make ResultsGridFrame work, or delete it and tranform output into a table
-					UIFileChooser flc = new UIFileChooser();
-					String[] header = flc.getHeader(omrContext.filledForms);
-					ArrayList<HashMap<String, String>> results = flc.getResults(omrContext.filledForms, header);
-					output.append(Arrays.toString(header));
-					output.append("\n");
-					output.append(results.toString());
-					output.append("\n");
+					List<String> header = Arrays.asList(omrContext.getTemplate().getHeader());
+					List<Map<String, String>> results = getResults(omrContext.filledForms);
+					UIResultTableModel tbmResult = new UIResultTableModel(header, results);
+					tblResult.setModel(tbmResult);
+					/* tblResult.append(header.toString());
+					tblResult.append("\n");
+					tblResult.append(results.toString());
+					tblResult.append("\n"); */
 
 					resetFirstPass();
 				}
@@ -133,7 +137,7 @@ public class UIScan extends JPanel {
 						uiView = new ImageFrame(omrContext, null);
 						uiView.revalidate();
 						uiView.repaint();
-						createResultsGridFrame(filledForm);
+						//createResultsGridFrame(filledForm);
 
 					} else {
 						resetFirstPass();
@@ -165,7 +169,7 @@ public class UIScan extends JPanel {
 			// points = filledForm.getFieldPoints();
 			omrContext.filledForms.put(imageFile.getName(), filledForm);
 			uiView.repaint();
-			createResultsGridFrame(filledForm);
+			//createResultsGridFrame(filledForm);
 		}
 	};
 
@@ -269,13 +273,15 @@ public class UIScan extends JPanel {
 		this.scrollPane = new JScrollPane(lstFiles);
 		this.uiView = new ImageFrame(omrContext, null);
 
-		JTextArea output = new JTextArea();
-		this.output = output;
+		List<String> header = Arrays.asList(omrContext.getTemplate().getHeader());
+		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		this.tblResult = new JTable();
+		this.tblResult.setModel(new UIResultTableModel(header, results));
 
 		add(pnlOptions, BorderLayout.NORTH);
 		add(this.scrollPane, BorderLayout.WEST);
 		add(this.uiView, BorderLayout.CENTER);
-		add(this.output, BorderLayout.SOUTH);
+		add(new JScrollPane(this.tblResult), BorderLayout.SOUTH);
 	}
 
 	public String getItemByIndex(int index) {
@@ -303,9 +309,22 @@ public class UIScan extends JPanel {
 		firstPass = true;
 	}
 
-	public void createResultsGridFrame(OMRModel filledForm) {
-		new ResultsGridFrame(omrContext, filledForm).setVisible(true);
-		// // uiMain.dtpMain.add(model.resultsGridFrame);
-		// model.resultsGridFrame.setVisible(true);
+	public List<Map<String, String>> getResults(Map<String, OMRModel> filledForms) {
+		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		
+		for (Entry<String, OMRModel> filledForm : filledForms.entrySet()) {
+			OMRModel form = filledForm.getValue();
+			List<FormField> fields = form.getFields();
+
+			HashMap<String, String> result = new HashMap<String, String>();
+			result.put(Dictionary.translate("first.csv.column"), filledForm.getKey());
+
+			for (FormField field : fields) {
+				result.put(field.getName(), field.getValues());
+			}
+			
+			results.add(result);
+		}
+		return results;
 	}
 }
