@@ -21,6 +21,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.sf.opticalbot.omr.Corner;
 import net.sf.opticalbot.omr.FormField;
@@ -235,6 +237,13 @@ public class UIOMRModel extends JPanel {
 		// Fields panel
 		lstFields = new JList<FormField>(lsmFields);
 		lstFields.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		ListSelectionModel listSelectionModel = lstFields.getSelectionModel();
+		listSelectionModel.addListSelectionListener(
+			new ListSelectionListener(){
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					uiImage.repaint();										
+				}});
 		JScrollPane scpFields = new JScrollPane(lstFields);
 
 		JButton btnMultipleFieldsCreation = new JButton();

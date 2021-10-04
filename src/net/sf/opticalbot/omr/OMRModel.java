@@ -31,8 +31,6 @@ public class OMRModel {
 
 	private double diagonal;
 	private File templateFile;
-	private int halfHeight;
-	private int halfWidth;
 	private int height;
 	private BufferedImage image;
 	private double rotation;
@@ -42,8 +40,6 @@ public class OMRModel {
 	public OMRModel() {
 		this.width = DEFAULT_WIDTH;
 		this.height = DEFAULT_HEIGHT;
-		this.halfWidth = (int) (DEFAULT_WIDTH / 2);
-		this.halfHeight = (int) (DEFAULT_HEIGHT / 2);
 		this.corners = new HashMap<Corner, FormPoint>();
 		this.corners.put(Corner.TOP_LEFT, new FormPoint(0, 0));
 		this.corners.put(Corner.TOP_RIGHT, new FormPoint(DEFAULT_WIDTH, 0));
@@ -233,6 +229,8 @@ public class OMRModel {
 		int stato;
 		int pixel;
 		int old_pixel;
+		int halfWidth = (int) (this.width / 2);
+		int halfHeight = (int) (this.height / 2);
 		// int whites;
 		// int currentPixelIndex;
 		int[] rgbArray = new int[halfWidth * halfHeight];
@@ -459,7 +457,7 @@ public class OMRModel {
 			for (int j = 0; j < WINDOW_SIZE; j++) {
 				int xji = xi - HALF_WINDOW_SIZE + j;
 				int yji = yi - HALF_WINDOW_SIZE + i;
-				int index = (yji * halfWidth) + xji;
+				int index = (yji * (this.width / 2)) + xji;
 				if ((rgbArray[index] & (0xFF)) < threshold) {
 					blacks++;
 				}
@@ -547,8 +545,6 @@ public class OMRModel {
 		this.image = image;
 		this.height = image.getHeight();
 		this.width = image.getWidth();
-		this.halfWidth = (int) (image.getHeight() / 2);
-		this.halfHeight = (int) (image.getWidth() / 2);
 	}
 
 	public void setImage(File imageFile) throws UnsupportedImageException, IOException {
@@ -558,9 +554,8 @@ public class OMRModel {
 		// supposed to be caught on front-end code
 		if (newImg == null)
 			throw new UnsupportedImageException();
-		else {
+		else
 			this.setImage(newImg);
-		}
 	}
 
 	public int getHeight() {

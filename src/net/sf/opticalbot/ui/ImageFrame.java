@@ -1,10 +1,10 @@
 package net.sf.opticalbot.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -27,6 +27,7 @@ import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.FormPoint;
 import net.sf.opticalbot.omr.OMRContext;
 import net.sf.opticalbot.omr.ShapeType;
+import net.sf.opticalbot.resources.Style;
 import net.sf.opticalbot.resources.Settings.Setting;
 
 public class ImageFrame extends JPanel {
@@ -264,7 +265,9 @@ public class ImageFrame extends JPanel {
 
 		@Override
 		public void paintComponent(Graphics g) {
-			g.setColor(Color.WHITE);
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setColor(Style.background);
 			g.fillRect(0, 0, omrContext.getTemplate().getWidth(), omrContext.getTemplate().getHeight());
 			
 			BufferedImage image = omrContext.getTemplate().getImage();
@@ -297,15 +300,14 @@ public class ImageFrame extends JPanel {
 				int y = (int) point.getY();
 
 				Graphics g1 = g.create();
-				g1.setColor(Color.RED);
+				g1.setColor(Style.field);
 
-				// TODO THIS IS NOT WORKING...
 				// If the point is from a selected field, paint it in other color
 				List<FormField> selection = uiOMRModel.lstFields.getSelectedValuesList();
 				for (FormField selectedFormField : selection) {
 					for (FormPoint selectedFormPoint : selectedFormField.getPoints().values())
 						if (point.equals(selectedFormPoint))
-							g1.setColor(Color.ORANGE);
+							g1.setColor(Style.selectedField);
 				}
 				
 				if (shape.equals(ShapeType.CIRCLE)) {
@@ -320,18 +322,16 @@ public class ImageFrame extends JPanel {
 		public void drawCorners(Graphics g) {
 			Map<Corner, FormPoint> corners = omrContext.getTemplate().getCorners();
 			if (!corners.isEmpty()) {
-				Graphics2D g2d = (Graphics2D) g.create();
-				g2d.setColor(new Color(0, 255, 0, 128));
+				g.setColor(Style.corner);
 				FormPoint p1 = corners.get(Corner.TOP_LEFT);
 				FormPoint p2 = corners.get(Corner.TOP_RIGHT);
 				FormPoint p3 = corners.get(Corner.BOTTOM_LEFT);
 				FormPoint p4 = corners.get(Corner.BOTTOM_RIGHT);
 				
-				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
-				g2d.drawLine((int) p1.getX(), (int) p1.getY(), (int) p3.getX(), (int) p3.getY());
-				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p2.getX(), (int) p2.getY());
-				g2d.drawLine((int) p4.getX(), (int) p4.getY(), (int) p3.getX(), (int) p3.getY());
-				g2d.dispose();
+				g.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
+				g.drawLine((int) p1.getX(), (int) p1.getY(), (int) p3.getX(), (int) p3.getY());
+				g.drawLine((int) p4.getX(), (int) p4.getY(), (int) p2.getX(), (int) p2.getY());
+				g.drawLine((int) p4.getX(), (int) p4.getY(), (int) p3.getX(), (int) p3.getY());
 			}
 		}
 
