@@ -30,7 +30,7 @@ import net.sf.opticalbot.omr.ShapeType;
 import net.sf.opticalbot.resources.Style;
 import net.sf.opticalbot.resources.Settings.Setting;
 
-public class ImageFrame extends JPanel {
+public class UIFormView extends JPanel {
 
 	public enum Mode {
 		CornerEdit, VIEW, SETUP_POINTS, MODIFY_POINTS;
@@ -184,7 +184,7 @@ public class ImageFrame extends JPanel {
 	/**
 	 * Create the frame.
 	 */
-	public ImageFrame(OMRContext omrContext, UIOMRModel uiOMRModel) {
+	public UIFormView(OMRContext omrContext, UIOMRModel uiOMRModel) {
 		this.omrContext = omrContext;
 		this.mode = Mode.VIEW;
 		this.points = new LinkedList<FormPoint>();
@@ -223,7 +223,7 @@ public class ImageFrame extends JPanel {
 
 		private static final long serialVersionUID = 1L;
 
-		public ImageScrollPane(JPanel imagePanel, ImageFrame imageFrame) {
+		public ImageScrollPane(JPanel imagePanel, UIFormView imageFrame) {
 			super(imagePanel);
 			verticalScrollBar.setValue(0);
 			horizontalScrollBar.setValue(0);
@@ -439,7 +439,7 @@ public class ImageFrame extends JPanel {
 								pts.add(pi);
 							}
 						}
-						setMode(ImageFrame.Mode.VIEW);
+						setMode(UIFormView.Mode.VIEW);
 						uiOMRModel.createFields(pts);
 					}
 				}

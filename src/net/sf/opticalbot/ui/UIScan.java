@@ -40,7 +40,7 @@ public class UIScan extends JPanel {
 	private final FileListModel lsmFiles;
 	private final OMRContext omrContext;
 	private JScrollPane scrollPane;
-	private ImageFrame uiView;
+	private UIFormView uiView;
 	private int analyzedFileIndex = 0;
 	public OMRModel filledForm;
 	public boolean firstPass = true; // TODO whatis this?
@@ -134,7 +134,7 @@ public class UIScan extends JPanel {
 						// filledForm, ImageFrame.Mode.MODIFY_POINTS);
 						// ImageFrame(model, image, template, mode,
 						// null);
-						uiView = new ImageFrame(omrContext, null);
+						uiView = new UIFormView(omrContext, null);
 						uiView.revalidate();
 						uiView.repaint();
 						//createResultsGridFrame(filledForm);
@@ -271,7 +271,7 @@ public class UIScan extends JPanel {
 		this.lstFiles = new JList<File>(lsmFiles);
 		this.lstFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.scrollPane = new JScrollPane(lstFiles);
-		this.uiView = new ImageFrame(omrContext, null);
+		this.uiView = new UIFormView(omrContext, null);
 
 		List<String> header = Arrays.asList(omrContext.getTemplate().getHeader());
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();

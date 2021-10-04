@@ -131,7 +131,7 @@ public class UIOMRModel extends JPanel {
 			case OK:
 				lastUIMultipleCreation = ui;
 				autoNumberingStart = ui.getAutoNumberingStart();
-				uiImage.setMode(ImageFrame.Mode.SETUP_POINTS);
+				uiImage.setMode(UIFormView.Mode.SETUP_POINTS);
 				break;
 			default:
 				break;
@@ -144,7 +144,7 @@ public class UIOMRModel extends JPanel {
 	public JList<FormField> lstFields;
 	private final OMRContext omrContext;
 	private int autoNumberingStart = 1;
-	private ImageFrame uiImage;
+	private UIFormView uiImage;
 	private UIMultipleFieldsCreation lastUIMultipleCreation;
 	private HashMap<Corner, JButton> cornerButtons = new HashMap<Corner, JButton>();
 	private HashMap<Corner, JLabel> cornerLabels = new HashMap<Corner, JLabel>();
@@ -279,7 +279,7 @@ public class UIOMRModel extends JPanel {
 		pnlModel.add(jslToolbar, BorderLayout.WEST);
 
 		// Image panel at center
-		this.uiImage = new ImageFrame(omrContext, this);
+		this.uiImage = new UIFormView(omrContext, this);
 
 		pnlModel.add(uiImage, BorderLayout.CENTER);
 
@@ -338,9 +338,9 @@ public class UIOMRModel extends JPanel {
 				boolean buttonsNewState = !button.isSelected();
 				button.setSelected(buttonsNewState);
 				if (buttonsNewState == true)
-					uiImage.setMode(ImageFrame.Mode.CornerEdit);
+					uiImage.setMode(UIFormView.Mode.CornerEdit);
 				else
-					uiImage.setMode(ImageFrame.Mode.VIEW);
+					uiImage.setMode(UIFormView.Mode.VIEW);
 			} else {
 				button.setSelected(false);
 			}

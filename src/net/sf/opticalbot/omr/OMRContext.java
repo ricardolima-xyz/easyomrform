@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Settings;
-import net.sf.opticalbot.ui.ImageFrame;
+import net.sf.opticalbot.ui.UIFormView;
 
 /** Main Application back-end. */
 public class OMRContext {
@@ -47,7 +47,7 @@ public class OMRContext {
 		return delta;
 	}
 
-	public void clearTemporaryPoint(ImageFrame view) {
+	public void clearTemporaryPoint(UIFormView view) {
 		view.clearTemporaryPoint();
 	}
 
