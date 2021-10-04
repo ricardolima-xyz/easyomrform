@@ -1,8 +1,6 @@
 package net.sf.opticalbot.ui;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,15 +16,8 @@ import net.sf.opticalbot.omr.FormField;
 import net.sf.opticalbot.omr.OMRModel;
 import net.sf.opticalbot.resources.Dictionary;
 
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.io.ICsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
-
 public class UIFileChooser extends JFileChooser {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public UIFileChooser() {
@@ -98,48 +89,7 @@ public class UIFileChooser extends JFileChooser {
 		setFileFilter(templateFilter);
 	}
 
-	private void setCsvFilter() {
-		resetChoosableFileFilters();
-		FileNameExtensionFilter templateFilter = new FileNameExtensionFilter(
-				Dictionary.translate("csv.file"), "csv");
-		setFileFilter(templateFilter);
-	}
-
-	public File saveCsvAs(File file, HashMap<String, OMRModel> filledForms) {
-		String[] header = getHeader(filledForms);
-		ArrayList<HashMap<String, String>> results = getResults(filledForms,
-				header);
-
-		ICsvMapWriter mapWriter = null;
-		try {
-			try {
-				setMultiSelectionEnabled(false);
-				setCsvFilter();
-				setSelectedFile(file);
-
-				int returnValue = showSaveDialog(null);
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					file = getSelectedFile();
-					mapWriter = new CsvMapWriter(new FileWriter(file),
-							CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-					mapWriter.writeHeader(header);
-
-					for (HashMap<String, String> result : results) {
-						mapWriter.write(result, header);
-					}
-				}
-			} finally {
-				if (mapWriter != null) {
-					mapWriter.close();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return file;
-	}
-
-	private ArrayList<HashMap<String, String>> getResults(
+	public ArrayList<HashMap<String, String>> getResults(
 			HashMap<String, OMRModel> filledForms, String[] header) {
 		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		for (Entry<String, OMRModel> filledForm : filledForms.entrySet()) {
@@ -158,7 +108,7 @@ public class UIFileChooser extends JFileChooser {
 		return results;
 	}
 
-	private String[] getHeader(HashMap<String, OMRModel> filledForms) {
+	public String[] getHeader(HashMap<String, OMRModel> filledForms) {
 		String aKey = (String) filledForms.keySet().toArray()[0];
 		OMRModel aForm = filledForms.get(aKey);
 		String[] header = (String[]) aForm.getHeader();

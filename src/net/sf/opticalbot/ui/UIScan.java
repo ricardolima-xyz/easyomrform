@@ -5,10 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 
 import net.sf.opticalbot.omr.OMRContext;
@@ -33,23 +33,24 @@ import net.sf.opticalbot.ui.utilities.ErrorDialog;
 public class UIScan extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JList<File> list;
+	private JList<File> lstFiles;
 	private final FileListModel lsmFiles;
-	private final OMRContext model;
+	private final OMRContext omrContext;
 	private JScrollPane scrollPane;
 	private ImageFrame uiView;
 	private int analyzedFileIndex = 0;
 	public OMRModel filledForm;
 	public boolean firstPass = true; // TODO whatis this?
 	public final List<File> openedFiles;
+	public final JTextArea output;
 
 	/** */
 	public final ActionListener actAnalyzeFilesAll = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
-			int density = Integer.valueOf(model.getSettings().get(Setting.Density));
-			int shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
+			int threshold = Integer.valueOf(omrContext.getSettings().get(Setting.Threshold));
+			int density = Integer.valueOf(omrContext.getSettings().get(Setting.Density));
+			int shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
 
 			try {
 				if (openedFiles.isEmpty()) {
@@ -62,23 +63,24 @@ public class UIScan extends JPanel {
 						selectFileAt(analyzedFileIndex);
 						File imageFile = openedFiles.get(analyzedFileIndex);
 
-						filledForm = new OMRModel(imageFile, model.formTemplate);
+						filledForm = new OMRModel(imageFile, omrContext.formTemplate);
 						// TODO Why is filledForm global?
 						filledForm.findCorners(threshold, density);
 						filledForm.findPoints(threshold, density, shapeSize);
-						model.filledForms.put(imageFile.getName(), filledForm);
+						omrContext.filledForms.put(imageFile.getName(), filledForm);
 					}
 
-					Date today = Calendar.getInstance().getTime();
-					SimpleDateFormat sdf = new SimpleDateFormat(
-							"yyyyMMddHHmmss");
 
-					// TODO HARDCODED LOCATION
-					File outputFile = new File("results/"
-							+ Dictionary.translate("results.default.file")
-							+ "_" + sdf.format(today) + ".csv");
+					// TODO HELP!
+					// Move the functions getResults and getHeader to appropriate locations
+					// Make ResultsGridFrame work, or delete it and tranform output into a table
 					UIFileChooser flc = new UIFileChooser();
-					flc.saveCsvAs(outputFile, model.filledForms);
+					String[] header = flc.getHeader(omrContext.filledForms);
+					ArrayList<HashMap<String, String>> results = flc.getResults(omrContext.filledForms, header);
+					output.append(Arrays.toString(header));
+					output.append("\n");
+					output.append(results.toString());
+					output.append("\n");
 
 					resetFirstPass();
 				}
@@ -98,9 +100,9 @@ public class UIScan extends JPanel {
 	public final ActionListener actAnalyzeFilesFirst = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
-			int density = Integer.valueOf(model.getSettings().get(Setting.Density));
-			int shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
+			int threshold = Integer.valueOf(omrContext.getSettings().get(Setting.Threshold));
+			int density = Integer.valueOf(omrContext.getSettings().get(Setting.Density));
+			int shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
 
 			try {
 				if (openedFiles.isEmpty()) {
@@ -118,33 +120,22 @@ public class UIScan extends JPanel {
 						selectFileAt(analyzedFileIndex);
 						File imageFile = openedFiles.get(analyzedFileIndex);
 
-						filledForm = new OMRModel(imageFile, model.formTemplate);
+						filledForm = new OMRModel(imageFile, omrContext.formTemplate);
 						filledForm.findCorners(threshold, density);
 						filledForm.findPoints(threshold, density, shapeSize);
 						// points = filledForm.getFieldPoints();
-						model.filledForms.put(imageFile.getName(), filledForm);
+						omrContext.filledForms.put(imageFile.getName(), filledForm);
 
 						// view.createFormImageFrame(filledForm.getImage(),
 						// filledForm, ImageFrame.Mode.MODIFY_POINTS);
 						// ImageFrame(model, image, template, mode,
 						// null);
-						uiView = new ImageFrame(model, /*filledForm.getImage(),*/
-								ImageFrame.Mode.MODIFY_POINTS, null);
+						uiView = new ImageFrame(omrContext, null);
 						uiView.revalidate();
 						uiView.repaint();
 						createResultsGridFrame(filledForm);
 
 					} else {
-						Date today = Calendar.getInstance().getTime();
-						SimpleDateFormat sdf = new SimpleDateFormat(
-								"yyyyMMddHHmmss");
-						// TODO HARDCODED LOCATION
-						File outputFile = new File("results/"
-								+ Dictionary.translate("results.default.file")
-								+ "_" + sdf.format(today) + ".csv");
-						UIFileChooser flc = new UIFileChooser();
-						flc.saveCsvAs(outputFile, model.filledForms);
-
 						resetFirstPass();
 					}
 				}
@@ -162,17 +153,17 @@ public class UIScan extends JPanel {
 	public final ActionListener actAnalyzeFilesCurrent = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int threshold = Integer.valueOf(model.getSettings().get(Setting.Threshold));
-			int density = Integer.valueOf(model.getSettings().get(Setting.Density));
-			int shapeSize = Integer.valueOf(model.getSettings().get(Setting.ShapeSize));
+			int threshold = Integer.valueOf(omrContext.getSettings().get(Setting.Threshold));
+			int density = Integer.valueOf(omrContext.getSettings().get(Setting.Density));
+			int shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
 
 			selectFileAt(analyzedFileIndex);
 			File imageFile = openedFiles.get(analyzedFileIndex);
-			filledForm = model.getTemplate();
+			filledForm = omrContext.getTemplate();
 			filledForm.clearPoints();
 			filledForm.findPoints(threshold, density, shapeSize);
 			// points = filledForm.getFieldPoints();
-			model.filledForms.put(imageFile.getName(), filledForm);
+			omrContext.filledForms.put(imageFile.getName(), filledForm);
 			uiView.repaint();
 			createResultsGridFrame(filledForm);
 		}
@@ -183,9 +174,9 @@ public class UIScan extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// model.openImages();
-			model.filledForms.clear();
+			omrContext.filledForms.clear();
 			openedFiles.clear();
-			model.firstPass = true;
+			omrContext.firstPass = true;
 
 			UIFileChooser flc = new UIFileChooser();
 			flc.setMultiSelectionEnabled(true);
@@ -230,12 +221,14 @@ public class UIScan extends JPanel {
 		}
 	};
 
-	public UIScan(final OMRContext model) {
-		this.setLayout(new BorderLayout());
-		this.model = model;
+	public UIScan(final OMRContext omrContext) {
+		super(new BorderLayout());
+		this.setOpaque(false);
+		this.omrContext = omrContext;
 		this.openedFiles = new LinkedList<File>();
 
 		JPanel pnlOptions = new JPanel();
+		pnlOptions.setOpaque(false);
 
 		JButton btnOpen = new JButton();
 		btnOpen.addActionListener(actOpenImages);
@@ -271,32 +264,35 @@ public class UIScan extends JPanel {
 		pnlOptions.add(btnReload);
 
 		this.lsmFiles = new FileListModel();
-		this.list = new JList<File>(lsmFiles);
-		this.list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.scrollPane = new JScrollPane(list);
+		this.lstFiles = new JList<File>(lsmFiles);
+		this.lstFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.scrollPane = new JScrollPane(lstFiles);
+		this.uiView = new ImageFrame(omrContext, null);
 
-		this.uiView = new ImageFrame(model, ImageFrame.Mode.MODIFY_POINTS, null);
+		JTextArea output = new JTextArea();
+		this.output = output;
 
 		add(pnlOptions, BorderLayout.NORTH);
 		add(this.scrollPane, BorderLayout.WEST);
 		add(this.uiView, BorderLayout.CENTER);
+		add(this.output, BorderLayout.SOUTH);
 	}
 
 	public String getItemByIndex(int index) {
-		list.setSelectedIndex(index);
-		return list.getSelectedValue().toString();
+		lstFiles.setSelectedIndex(index);
+		return lstFiles.getSelectedValue().toString();
 	}
 
 	public String getSelectedItem() {
-		return list.getSelectedValue().toString();
+		return lstFiles.getSelectedValue().toString();
 	}
 
 	public int getSelectedItemIndex() {
-		return (list.isSelectionEmpty()) ? 0 : list.getSelectedIndex();
+		return (lstFiles.isSelectionEmpty()) ? 0 : lstFiles.getSelectedIndex();
 	}
 
 	public void selectFileAt(int index) {
-		list.setSelectedIndex(index);
+		lstFiles.setSelectedIndex(index);
 	}
 
 	public void update() {
@@ -308,7 +304,7 @@ public class UIScan extends JPanel {
 	}
 
 	public void createResultsGridFrame(OMRModel filledForm) {
-		new ResultsGridFrame(model, filledForm).setVisible(true);
+		new ResultsGridFrame(omrContext, filledForm).setVisible(true);
 		// // uiMain.dtpMain.add(model.resultsGridFrame);
 		// model.resultsGridFrame.setVisible(true);
 	}

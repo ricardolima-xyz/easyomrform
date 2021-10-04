@@ -476,31 +476,6 @@ public class OMRModel {
 		fields.remove(field);
 	}
 
-	public void removePoint(FormPoint cursorPoint) {
-		if (!pointList.isEmpty()) {
-			FormPoint nearestPoint = pointList.get(0);
-			double firstDistance = cursorPoint.dist2(nearestPoint);
-			for (FormPoint point : pointList) {
-				double lastDistance = cursorPoint.dist2(point);
-				if (lastDistance < firstDistance) {
-					nearestPoint = point;
-					firstDistance = lastDistance;
-				}
-			}
-			pointList.remove(nearestPoint);
-
-			for (FormField field : fields) {
-				for (Entry<String, FormPoint> point : field.getPoints()
-						.entrySet()) {
-					if (nearestPoint.equals(point.getValue())) {
-						field.getPoints().remove(point.getKey());
-						return;
-					}
-				}
-			}
-		}
-	}
-
 	public void setCorner(Corner corner, FormPoint point) {
 		corners.put(corner, point);
 	}

@@ -52,16 +52,6 @@ public class OMRContext {
 	}
 
 	// // TODO: what does it do?
-	// public void deleteNearestPointTo(FormPoint cursorPoint) {
-	// if (filledForm != null) {
-	// filledForm.removePoint(cursorPoint);
-	// view.createResultsGridFrame();
-	// } else {
-	// formTemplate.removePoint(cursorPoint);
-	// }
-	// view.repaint();
-	// }
-	//
 	// public OMRModel getFilledForm() {
 	// return filledForm;
 	// }

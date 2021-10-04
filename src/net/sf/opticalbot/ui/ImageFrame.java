@@ -88,13 +88,6 @@ public class ImageFrame extends JPanel {
 						setCorner(cornerToEdit, showCursorPosition(e));
 					} 
 					break;
-				case MODIFY_POINTS:
-					if (e.getButton() == MouseEvent.BUTTON3) {
-						// TODO Resolve
-						JOptionPane.showMessageDialog(null, "model.deleteNearestPointTo(getCursorPoint(e));");
-					}
-					break;
-				case VIEW:
 				default:
 					break;
 			}
@@ -191,9 +184,9 @@ public class ImageFrame extends JPanel {
 	/**
 	 * Create the frame.
 	 */
-	public ImageFrame(OMRContext omrContext, Mode mode, UIOMRModel uiOMRModel) {
+	public ImageFrame(OMRContext omrContext, UIOMRModel uiOMRModel) {
 		this.omrContext = omrContext;
-		this.mode = mode;
+		this.mode = Mode.VIEW;
 		this.points = new LinkedList<FormPoint>();
 		this.uiOMRModel = uiOMRModel;
 
@@ -303,11 +296,13 @@ public class ImageFrame extends JPanel {
 				g1.setColor(Style.field);
 
 				// If the point is from a selected field, paint it in other color
-				List<FormField> selection = uiOMRModel.lstFields.getSelectedValuesList();
-				for (FormField selectedFormField : selection) {
-					for (FormPoint selectedFormPoint : selectedFormField.getPoints().values())
-						if (point.equals(selectedFormPoint))
-							g1.setColor(Style.selectedField);
+				if (uiOMRModel != null) {
+					List<FormField> selection = uiOMRModel.lstFields.getSelectedValuesList();
+					for (FormField selectedFormField : selection) {
+						for (FormPoint selectedFormPoint : selectedFormField.getPoints().values())
+							if (point.equals(selectedFormPoint))
+								g1.setColor(Style.selectedField);
+					}
 				}
 				
 				if (shape.equals(ShapeType.CIRCLE)) {
@@ -404,8 +399,6 @@ public class ImageFrame extends JPanel {
 					if (points.isEmpty()) {
 						points.add(p);
 						uiOMRModel.createFields(points);
-						// TODO: REIMPLEMENT DELETED METHOD
-						// uiOMRModel.toFront();
 					}
 				} else {
 					if (points.isEmpty() || (points.size() > 1)) {

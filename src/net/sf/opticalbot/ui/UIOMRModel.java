@@ -279,7 +279,7 @@ public class UIOMRModel extends JPanel {
 		pnlModel.add(jslToolbar, BorderLayout.WEST);
 
 		// Image panel at center
-		this.uiImage = new ImageFrame(omrContext, ImageFrame.Mode.VIEW, this);
+		this.uiImage = new ImageFrame(omrContext, this);
 
 		pnlModel.add(uiImage, BorderLayout.CENTER);
 
