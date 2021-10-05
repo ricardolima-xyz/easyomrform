@@ -1,6 +1,7 @@
 package net.sf.opticalbot.ui;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -19,7 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.SpringLayout;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -29,7 +29,6 @@ import net.sf.opticalbot.resources.Resources;
 import net.sf.opticalbot.ui.utilities.ErrorDialog;
 import net.sf.opticalbot.ui.utilities.Hyperlink;
 import net.sf.opticalbot.ui.utilities.HyperlinkException;
-import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
 /** User interface for About screen */
 public class UIAbout extends JDialog {
@@ -72,9 +71,8 @@ public class UIAbout extends JDialog {
 		btnOK.addActionListener(actOK);
 
 		// Buttons panel
-		JPanel pnlButtons = new JPanel(new SpringLayout());
+		JPanel pnlButtons = new JPanel(new FlowLayout());
 		pnlButtons.add(btnOK);
-		SpringUtilities.makeCompactGrid(pnlButtons, 1, 1, 3, 3, 3, 3);
 
 		JTabbedPane tbpAbout = new JTabbedPane(JTabbedPane.TOP);
 		tbpAbout.addTab(Dictionary.translate("about.tab.about"), pnlAbout);

@@ -6,7 +6,6 @@ public class Icons {
 	public static final String CORNER_TOP_RIGHT = "corner-top-right.png";
 	public static final String CORNER_BOTTOM_LEFT = "corner-bottom-left.png";
 	public static final String CORNER_BOTTOM_RIGHT = "corner-bottom-right.png";
-	public static final String CORNER_AUTO_DETECT = "arrow-refresh.png";
     public static final String SET_IMAGE = "picture-edit.png";
 	
 	public static final String OPEN_IMAGES_ICON = "task-add.png";

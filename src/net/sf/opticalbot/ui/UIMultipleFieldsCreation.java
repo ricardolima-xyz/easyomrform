@@ -1,10 +1,12 @@
 package net.sf.opticalbot.ui;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -14,11 +16,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SpringLayout;
 
 import net.sf.opticalbot.omr.Orientation;
 import net.sf.opticalbot.resources.Dictionary;
-import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
 public class UIMultipleFieldsCreation extends JDialog {
 
@@ -76,7 +76,7 @@ public class UIMultipleFieldsCreation extends JDialog {
 				autoNumberingStart, 1, Integer.MAX_VALUE, 1));
 
 		JPanel pnlOptions = new JPanel();
-		pnlOptions.setLayout(new SpringLayout());
+		pnlOptions.setLayout(new BoxLayout(pnlOptions, BoxLayout.Y_AXIS));
 
 		pnlOptions.add(new JLabel(Dictionary
 				.translate("field.properties.type.label")));
@@ -93,7 +93,12 @@ public class UIMultipleFieldsCreation extends JDialog {
 		pnlOptions.add(new JLabel(Dictionary
 				.translate("field.properties.auto.numbering.start.label")));
 		pnlOptions.add(spnAutoNumberingStart);
-		SpringUtilities.makeGrid(pnlOptions, 5, 2, 3, 3, 3, 3);
+
+		// TODO: Improve design of this window
+		for (java.awt.Component c: pnlOptions.getComponents()) {
+			javax.swing.JComponent jc = (javax.swing.JComponent)c;
+			jc.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+		}
 
 		btnOK = new JButton();
 		btnOK.addActionListener(actOK);
@@ -103,11 +108,9 @@ public class UIMultipleFieldsCreation extends JDialog {
 		btnCancel.addActionListener(actCancel);
 		btnCancel.setText(Dictionary.translate("cancel.button"));
 
-		JPanel pnlOKCancel = new JPanel();
-		pnlOKCancel.setLayout(new SpringLayout());
+		JPanel pnlOKCancel = new JPanel(new FlowLayout());
 		pnlOKCancel.add(btnOK);
 		pnlOKCancel.add(btnCancel);
-		SpringUtilities.makeCompactGrid(pnlOKCancel, 1, 2, 3, 3, 3, 3);
 
 		this.add(pnlOptions, BorderLayout.CENTER);
 		this.add(pnlOKCancel, BorderLayout.SOUTH);

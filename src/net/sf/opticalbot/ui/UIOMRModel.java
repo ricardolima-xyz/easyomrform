@@ -1,6 +1,8 @@
 package net.sf.opticalbot.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -10,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -17,9 +20,9 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -34,9 +37,7 @@ import net.sf.opticalbot.resources.Dictionary;
 import net.sf.opticalbot.resources.Icons;
 import net.sf.opticalbot.resources.Resources;
 import net.sf.opticalbot.resources.Settings.Setting;
-import net.sf.opticalbot.ui.utilities.ErrorDialog;
 import net.sf.opticalbot.ui.utilities.JSildeBar;
-import net.sf.opticalbot.ui.utilities.SpringUtilities;
 
 public class UIOMRModel extends JPanel {
 
@@ -165,17 +166,6 @@ public class UIOMRModel extends JPanel {
 		btnSetImage.setIcon(Resources.getIcon(Icons.SET_IMAGE));
 		btnSetImage.setText("DICT Set Image");
 
-		JButton btnAutoDetect = new JButton();
-		btnAutoDetect.setHorizontalAlignment(SwingConstants.LEFT);
-		// TODO Implement AutoDetect button
-		btnAutoDetect.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new ErrorDialog(new Throwable("Method not implemented")).setVisible(true);;
-		}});
-		btnAutoDetect.setIcon(Resources.getIcon(Icons.CORNER_AUTO_DETECT));
-		btnAutoDetect.setText("DICT Auto detect");
-
 		JButton btnTopLeft = new JButton();
 		btnTopLeft.setHorizontalAlignment(SwingConstants.LEFT);
 		btnTopLeft.addActionListener(actCornerTopLeft);
@@ -218,11 +208,11 @@ public class UIOMRModel extends JPanel {
 		cornerLabels.put(Corner.BOTTOM_RIGHT, lblBottomRight);
 		updateCornerPosition();
 
-		JPanel pnlGeneral = new JPanel(new BorderLayout());
+		JPanel pnlGeneral = new JPanel();
 		pnlGeneral.setOpaque(false);
-		pnlGeneral.setLayout(new SpringLayout());
+		BoxLayout bxl = new BoxLayout(pnlGeneral, BoxLayout.Y_AXIS);
+		pnlGeneral.setLayout(bxl);
 		pnlGeneral.add(btnSetImage);
-		pnlGeneral.add(btnAutoDetect);
 		pnlGeneral.add(btnTopLeft);
 		pnlGeneral.add(lblTopLeft);
 		pnlGeneral.add(btnTopRight);
@@ -231,8 +221,9 @@ public class UIOMRModel extends JPanel {
 		pnlGeneral.add(lblBottomLeft);
 		pnlGeneral.add(btnBottomRight);
 		pnlGeneral.add(lblBottomRight);
-
-		SpringUtilities.makeCompactGrid( pnlGeneral, 10, 1, 1, 1, 3, 3);
+		for (java.awt.Component c : pnlGeneral.getComponents()) {
+			c.setMaximumSize(new Dimension(Integer.MAX_VALUE, c.getMaximumSize().height));
+		}
 
 		// Fields panel
 		lstFields = new JList<FormField>(lsmFields);
@@ -260,12 +251,10 @@ public class UIOMRModel extends JPanel {
 		btnFieldDelete.setToolTipText(Dictionary
 				.translate("remove.field.button.tooltip"));
 
-		JPanel pnlFieldsOptions = new JPanel();
+		JPanel pnlFieldsOptions = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		pnlFieldsOptions.setOpaque(false);
-		pnlFieldsOptions.setLayout(new SpringLayout());
 		pnlFieldsOptions.add(btnMultipleFieldsCreation);
 		pnlFieldsOptions.add(btnFieldDelete);
-		SpringUtilities.makeGrid(pnlFieldsOptions, 2, 1, 1, 1, 3, 3);
 
 		JPanel pnlFieldList = new JPanel(new BorderLayout());
 		pnlFieldList.setOpaque(false);
@@ -276,12 +265,13 @@ public class UIOMRModel extends JPanel {
 		jslToolbar.addBar("DICT General", pnlGeneral);
 		jslToolbar.addBar("DICT Fields", pnlFieldList);
 
-		pnlModel.add(jslToolbar, BorderLayout.WEST);
-
-		// Image panel at center
+		// Form View panel
 		this.uiImage = new UIFormView(omrContext, this);
-
-		pnlModel.add(uiImage, BorderLayout.CENTER);
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, jslToolbar, this.uiImage);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(200);
+		pnlModel.add(splitPane, BorderLayout.CENTER);
 
 		JTabbedPane tbpOMRModel = new JTabbedPane();
 		tbpOMRModel.add("DICT Model", pnlModel);

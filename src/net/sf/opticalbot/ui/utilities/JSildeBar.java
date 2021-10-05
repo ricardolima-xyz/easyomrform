@@ -58,6 +58,7 @@ public class JSildeBar extends JPanel implements ActionListener {
 		this.setLayout(new BorderLayout());
 		this.add(topPanel, BorderLayout.NORTH);
 		this.add(bottomPanel, BorderLayout.SOUTH);
+		this.setOpaque(false);
 	}
 
 	/**
