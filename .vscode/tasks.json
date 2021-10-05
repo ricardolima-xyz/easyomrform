@@ -1,0 +1,20 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "java",
+			"mainClass": "net.sf.opticalbot.App",
+			"targetPath": "${workspaceFolder}/build/${workspaceFolderBasename}.jar",
+			"elements": [
+				"${compileOutput}",
+				"${dependencies}"
+			],
+			"problemMatcher": [],
+			"label": "java: exportjar:opticalbot",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

@@ -6,8 +6,8 @@ import javax.swing.ImageIcon;
 
 public class Resources {
 
-	private static String iconsPath = "resources/icons/";
-	private static String licenseFile = "resources/license/license.txt";
+	private static String iconsPath = "src/resources/icons/";
+	private static String licenseFile = "src/resources/license/license.txt";
 
 	public static ImageIcon getIcon(String key) {
 		ImageIcon icon = new ImageIcon(iconsPath + key);

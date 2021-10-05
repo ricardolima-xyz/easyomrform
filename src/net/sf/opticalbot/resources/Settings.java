@@ -39,7 +39,7 @@ public class Settings extends Properties {
 		}
 	}
 
-	private static final String SETTINGS_FILE = "resources/settings/settings.properties";
+	private static final String SETTINGS_FILE = "opticalbot.properties";
 	private static final long serialVersionUID = 1L;
 
 	public Settings() {

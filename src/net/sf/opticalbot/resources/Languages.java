@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Languages {
 
-	private static final String LANGUAGES_DIR = "resources/language/";
+	private static final String LANGUAGES_DIR = "src/resources/language/";
 
 	public static Set<String> getAvailableLanguages() {
 		Set<String> result = new HashSet<String>();

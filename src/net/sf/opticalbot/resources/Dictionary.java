@@ -17,7 +17,7 @@ public class Dictionary extends Properties {
 	private static final long serialVersionUID = 1L;
 
 	// External directory where this class will scan for language files
-	private static final String LANGUAGES_DIR = "resources/language/";
+	private static final String LANGUAGES_DIR = "src/resources/language/";
 
 	private static Dictionary i18n = null;
 
