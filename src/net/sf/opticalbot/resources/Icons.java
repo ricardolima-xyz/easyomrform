@@ -9,7 +9,9 @@ public class Icons {
 	public static final String CORNER_AUTO_DETECT = "arrow-refresh.png";
     public static final String SET_IMAGE = "picture-edit.png";
 	
-	public static final String OPEN_IMAGES_ICON = "folder-page.png";
+	public static final String OPEN_IMAGES_ICON = "task-add.png";
+	public static final String CLOSE_IMAGES_ICON = "task-delete.png";
+	public static final String CLEAR_IMAGES_ICON = "brush.png";
 	public static final String SAVE_RESULTS_ICON = "page-save.png";
 	public static final String REMOVE_FIELD_BUTTON = "delete.png";
 	public static final String ADD_FIELD_BUTTON = "add.png";
@@ -17,4 +19,5 @@ public class Icons {
 	public static final String ENABLED_BUTTON = "bullet-white.png";
 	public static final String ANALYZE_FILES_ALL_ICON = "control-fastforward-blue.png";
 	public static final String ANALYZE_FILES_CURRENT_ICON = "control-repeat-blue.png";
+	public static final String EXPORT_RESULT = "table-go.png";
 }

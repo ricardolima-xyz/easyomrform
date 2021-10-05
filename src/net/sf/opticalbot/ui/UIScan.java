@@ -142,11 +142,14 @@ public class UIScan extends JPanel {
 		this.omrContext = omrContext;
 		this.openedFiles = new LinkedList<File>();
 
-		JPanel pnlResultsToolbar = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		pnlResultsToolbar.setOpaque(false);
+		JPanel pnlMainToolbar = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		pnlMainToolbar.setOpaque(false);
 
-		JPanel pnlResults = new JPanel(new CardLayout());
-		pnlResults.setOpaque(false);
+		JPanel pnlMainMutableToolbar = new JPanel(new CardLayout());
+		pnlMainMutableToolbar.setOpaque(false);
+
+		JPanel pnlMain = new JPanel(new CardLayout());
+		pnlMain.setOpaque(false);
 
 		String view1 = "DICT Files";
 		String view2 = "DICT Result table";
@@ -155,51 +158,72 @@ public class UIScan extends JPanel {
 		cbxView.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent evt) {
-				CardLayout cl = (CardLayout)(pnlResults.getLayout());
-				cl.show(pnlResults, (String)evt.getItem());
+				CardLayout cl1 = (CardLayout)(pnlMain.getLayout());
+				cl1.show(pnlMain, (String)evt.getItem());
+				CardLayout cl2 = (CardLayout)(pnlMainMutableToolbar.getLayout());
+				cl2.show(pnlMainMutableToolbar, (String)evt.getItem());
 			}
 		});
-		pnlResultsToolbar.add(cbxView);
+		pnlMainToolbar.add(cbxView);
+		pnlMainToolbar.add(pnlMainMutableToolbar);
 
 		JPanel pnlView1 = new JPanel(new BorderLayout());
 		pnlView1.setOpaque(false);
 
-		JPanel pnlFileToolbar = new JPanel();
-		pnlFileToolbar.setOpaque(false);
+		JPanel pnlView1Toolbar = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		pnlView1Toolbar.setOpaque(false);
 
 		JButton btnOpen = new JButton();
 		btnOpen.addActionListener(actOpenImages);
 		btnOpen.setIcon(Resources.getIcon(Icons.OPEN_IMAGES_ICON));
 		btnOpen.setToolTipText(Dictionary.translate("open.images.tooltip"));
 
-		JButton btnClear = new JButton("Clear list");
+		JButton btnClose = new JButton();
+		// btnClose.addActionListener(actCloseImages); TODO
+		btnClose.setIcon(Resources.getIcon(Icons.CLOSE_IMAGES_ICON));
+		// btnClear.setToolTipText(Dictionary.translate("clear.images.tooltip")); TODO
+
+		JButton btnClear = new JButton();
 		btnClear.addActionListener(actClearList);
+		btnClear.setIcon(Resources.getIcon(Icons.CLEAR_IMAGES_ICON));
+		// btnClear.setToolTipText(Dictionary.translate("clear.images.tooltip")); TODO
 
 		JButton btnStartAll = new JButton();
 		btnStartAll.addActionListener(actAnalyzeFilesAll);
 		btnStartAll.setIcon(Resources.getIcon(Icons.ANALYZE_FILES_ALL_ICON));
 		btnStartAll.setToolTipText(Dictionary.translate("analyze.files.all.tooltip"));
 
-		pnlFileToolbar.add(btnOpen);
-		pnlFileToolbar.add(btnClear);
-		pnlFileToolbar.add(btnStartAll);
+		pnlView1Toolbar.add(btnOpen);
+		pnlView1Toolbar.add(btnClose);
+		pnlView1Toolbar.add(btnClear);
+		pnlView1Toolbar.add(btnStartAll);
 
 		this.lsmFiles = new FileListModel();
 		JList<File> lstFiles = new JList<File>(lsmFiles);
 		lstFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		JPanel pnlFiles = new JPanel(new BorderLayout());
-		pnlFiles.setOpaque(false);
-		pnlFiles.add(pnlFileToolbar, BorderLayout.NORTH);
-		pnlFiles.add(new JScrollPane(lstFiles), BorderLayout.CENTER);
+		pnlMainMutableToolbar.add(pnlView1Toolbar, view1);
 
 		this.uiView = new UIFormView(omrContext, null);
 
-		pnlView1.add(pnlFiles, BorderLayout.WEST);
+		pnlView1.add(new JScrollPane(lstFiles), BorderLayout.WEST);
 		pnlView1.add(this.uiView, BorderLayout.CENTER);
 
 		JPanel pnlView2 = new JPanel(new BorderLayout());
 		pnlView2.setOpaque(false);
+
+		JPanel pnlView2Toolbar = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		pnlView2Toolbar.setOpaque(false);
+
+		JButton btnExportResult = new JButton();
+		// btnExportResult.addActionListener(actExportResult); TODO
+		btnExportResult.setIcon(Resources.getIcon(Icons.EXPORT_RESULT));
+		// btnExportResult.setToolTipText(Dictionary.translate("clear.images.tooltip")); TODO
+
+		pnlView2Toolbar.add(btnExportResult);
+
+
+		pnlMainMutableToolbar.add(pnlView2Toolbar, view2);
 
 		List<String> header = Arrays.asList(omrContext.getTemplate().getHeader());
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
@@ -208,11 +232,11 @@ public class UIScan extends JPanel {
 		this.tblResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		pnlView2.add(new JScrollPane(this.tblResult), BorderLayout.CENTER);
 
-		pnlResults.add(pnlView1, view1);
-		pnlResults.add(pnlView2, view2);
+		pnlMain.add(pnlView1, view1);
+		pnlMain.add(pnlView2, view2);
 
-		add(pnlResultsToolbar, BorderLayout.NORTH);
-		add(pnlResults, BorderLayout.CENTER);
+		add(pnlMainToolbar, BorderLayout.NORTH);
+		add(pnlMain, BorderLayout.CENTER);
 	}
 
 	public List<Map<String, String>> getResults(Map<String, OMRModel> filledForms) {
