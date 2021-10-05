@@ -239,6 +239,7 @@ public class UIMain extends JFrame {
 		JMenuItem mniSave = new JMenuItem(Dictionary.translate("DICT Save model"));
 		mniSave.setEnabled(false);
 		mniSave.addActionListener(actSave);
+		mniSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
 		this.mniSave = mniSave;
 
 		JMenuItem mniSaveAs = new JMenuItem(Dictionary.translate("DICT Save model as..."));
