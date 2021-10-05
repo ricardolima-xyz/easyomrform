@@ -103,7 +103,10 @@ public class UIMain extends JFrame {
 					return;
 				}
 			} catch (OMRModelLoadException e1) {
-				new ErrorDialog(e1).setVisible(true);
+				JOptionPane.showMessageDialog(instance,
+						Dictionary.translate("template.not.loaded"),
+						Dictionary.translate("template.not.loaded.popup.title"),
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	};
@@ -134,15 +137,15 @@ public class UIMain extends JFrame {
 				// At this point, OMRModel has a file associated with it.
 				omrContext.getTemplate().setFile(file);
 				OMRModelFactory.save(omrContext.getTemplate());
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(instance,
 						Dictionary.translate("template.saved"),
 						Dictionary.translate("template.saved.popup.title"),
 						JOptionPane.INFORMATION_MESSAGE);
 			} catch (OMRModelSaveException e1) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(instance,
 						Dictionary.translate("template.not.saved"),
 						Dictionary.translate("template.not.saved.popup.title"),
-						JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	};
@@ -158,7 +161,7 @@ public class UIMain extends JFrame {
 					File file = flc.getSelectedFile();
 					omrContext.getTemplate().setFile(file);
 					OMRModelFactory.save(omrContext.getTemplate());
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(instance,
 						Dictionary.translate("template.saved"),
 						Dictionary.translate("template.saved.popup.title"),
 						JOptionPane.INFORMATION_MESSAGE);
@@ -166,10 +169,10 @@ public class UIMain extends JFrame {
 					return; // User clicked "cancel". Aborting.
 				}
 			} catch (OMRModelSaveException e1) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(instance,
 						Dictionary.translate("template.not.saved"),
 						Dictionary.translate("template.not.saved.popup.title"),
-						JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	};
@@ -189,8 +192,8 @@ public class UIMain extends JFrame {
 			JRadioButtonMenuItem object = (JRadioButtonMenuItem) e.getSource();
 			omrContext.getSettings().set(Settings.Setting.Language, object.getName());
 			omrContext.getSettings().store();
-			JOptionPane.showMessageDialog(null, Dictionary.translate("language.changed.message"),
-					Dictionary.translate("settings.popup.title"), JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(instance, Dictionary.translate("language.changed.message"),
+					Dictionary.translate("settings.popup.title"), JOptionPane.WARNING_MESSAGE);
 		}
 	};
 

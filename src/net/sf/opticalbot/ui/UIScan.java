@@ -1,8 +1,13 @@
 package net.sf.opticalbot.ui;
 
+
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +19,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -36,12 +43,11 @@ import net.sf.opticalbot.ui.utilities.ErrorDialog;
 public class UIScan extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private final JList<File> lstFiles;
 	private final FileListModel lsmFiles;
 	private final OMRContext omrContext;
 	private final List<File> openedFiles;
 	private final JTable tblResult;
-	private UIFormView uiView;
+	private final UIFormView uiView;
 
 	/** */
 	public final ActionListener actAnalyzeFilesAll = new ActionListener() {
@@ -56,8 +62,7 @@ public class UIScan extends JPanel {
 					JOptionPane.showMessageDialog(null, "DICT There are no files to scan");
 				} else {
 					for (int i = 0; i < openedFiles.size(); i++) {
-						selectFileAt(i);
-						File imageFile = openedFiles.get(i);
+						File imageFile = lsmFiles.getElementAt(i);
 
 						OMRModel filledForm = new OMRModel(imageFile, omrContext.formTemplate);
 						filledForm.findCorners(threshold, density);
@@ -78,6 +83,7 @@ public class UIScan extends JPanel {
 						Dictionary.translate("DICT 	error.popup.title"), JOptionPane.ERROR_MESSAGE);
 			}
 		}
+
 	};
 
 	/** Action for Open Images option */
@@ -136,8 +142,30 @@ public class UIScan extends JPanel {
 		this.omrContext = omrContext;
 		this.openedFiles = new LinkedList<File>();
 
-		JPanel pnlOptions = new JPanel();
-		pnlOptions.setOpaque(false);
+		JPanel pnlResultsToolbar = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		pnlResultsToolbar.setOpaque(false);
+
+		JPanel pnlResults = new JPanel(new CardLayout());
+		pnlResults.setOpaque(false);
+
+		String view1 = "DICT Files";
+		String view2 = "DICT Result table";
+		JComboBox<String> cbxView = new JComboBox<String>();
+		cbxView.setModel(new DefaultComboBoxModel<String>(new String[]{view1, view2}));
+		cbxView.addItemListener(new ItemListener(){
+			@Override
+			public void itemStateChanged(ItemEvent evt) {
+				CardLayout cl = (CardLayout)(pnlResults.getLayout());
+				cl.show(pnlResults, (String)evt.getItem());
+			}
+		});
+		pnlResultsToolbar.add(cbxView);
+
+		JPanel pnlView1 = new JPanel(new BorderLayout());
+		pnlView1.setOpaque(false);
+
+		JPanel pnlFileToolbar = new JPanel();
+		pnlFileToolbar.setOpaque(false);
 
 		JButton btnOpen = new JButton();
 		btnOpen.addActionListener(actOpenImages);
@@ -152,46 +180,39 @@ public class UIScan extends JPanel {
 		btnStartAll.setIcon(Resources.getIcon(Icons.ANALYZE_FILES_ALL_ICON));
 		btnStartAll.setToolTipText(Dictionary.translate("analyze.files.all.tooltip"));
 
-		pnlOptions.add(btnOpen);
-		pnlOptions.add(btnClear);
-		pnlOptions.add(btnStartAll);
+		pnlFileToolbar.add(btnOpen);
+		pnlFileToolbar.add(btnClear);
+		pnlFileToolbar.add(btnStartAll);
 
 		this.lsmFiles = new FileListModel();
-		this.lstFiles = new JList<File>(lsmFiles);
-		this.lstFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JList<File> lstFiles = new JList<File>(lsmFiles);
+		lstFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		JPanel pnlFiles = new JPanel(new BorderLayout());
+		pnlFiles.setOpaque(false);
+		pnlFiles.add(pnlFileToolbar, BorderLayout.NORTH);
+		pnlFiles.add(new JScrollPane(lstFiles), BorderLayout.CENTER);
+
 		this.uiView = new UIFormView(omrContext, null);
+
+		pnlView1.add(pnlFiles, BorderLayout.WEST);
+		pnlView1.add(this.uiView, BorderLayout.CENTER);
+
+		JPanel pnlView2 = new JPanel(new BorderLayout());
+		pnlView2.setOpaque(false);
 
 		List<String> header = Arrays.asList(omrContext.getTemplate().getHeader());
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		this.tblResult = new JTable();
 		this.tblResult.setModel(new UIResultTableModel(header, results));
 		this.tblResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		pnlView2.add(new JScrollPane(this.tblResult), BorderLayout.CENTER);
 
-		add(pnlOptions, BorderLayout.NORTH);
-		add(new JScrollPane(lstFiles), BorderLayout.WEST);
-		add(this.uiView, BorderLayout.CENTER);
-		add(new JScrollPane(this.tblResult), BorderLayout.SOUTH);
-	}
+		pnlResults.add(pnlView1, view1);
+		pnlResults.add(pnlView2, view2);
 
-	public String getItemByIndex(int index) {
-		lstFiles.setSelectedIndex(index);
-		return lstFiles.getSelectedValue().toString();
-	}
-
-	public String getSelectedItem() {
-		return lstFiles.getSelectedValue().toString();
-	}
-
-	public int getSelectedItemIndex() {
-		return (lstFiles.isSelectionEmpty()) ? 0 : lstFiles.getSelectedIndex();
-	}
-
-	public void selectFileAt(int index) {
-		lstFiles.setSelectedIndex(index);
-	}
-
-	public void update() {
-		lsmFiles.update();
+		add(pnlResultsToolbar, BorderLayout.NORTH);
+		add(pnlResults, BorderLayout.CENTER);
 	}
 
 	public List<Map<String, String>> getResults(Map<String, OMRModel> filledForms) {

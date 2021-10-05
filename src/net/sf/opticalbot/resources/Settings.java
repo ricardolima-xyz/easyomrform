@@ -19,7 +19,7 @@ public class Settings extends Properties {
 	public static int MIN_SHAPESIZE = 1;
 
 	public enum Setting {
-		Language("lang", "en"), Threshold("threshold", "127"), Density("density", "60"), ShapeSize("shape.size", "60"),
+		Language("lang", "en"), Threshold("threshold", "127"), Density("density", "60"), ShapeSize("shape.size", "6"),
 		Shape("shape.type", ShapeType.CIRCLE.name());
 
 		private final String key;
