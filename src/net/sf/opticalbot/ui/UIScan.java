@@ -36,16 +36,12 @@ import net.sf.opticalbot.ui.utilities.ErrorDialog;
 public class UIScan extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JList<File> lstFiles;
+	private final JList<File> lstFiles;
 	private final FileListModel lsmFiles;
 	private final OMRContext omrContext;
-	private JScrollPane scrollPane;
+	private final List<File> openedFiles;
+	private final JTable tblResult;
 	private UIFormView uiView;
-	private int analyzedFileIndex = 0;
-	public OMRModel filledForm;
-	public boolean firstPass = true; // TODO whatis this?
-	public final List<File> openedFiles;
-	public final JTable tblResult;
 
 	/** */
 	public final ActionListener actAnalyzeFilesAll = new ActionListener() {
@@ -57,119 +53,30 @@ public class UIScan extends JPanel {
 
 			try {
 				if (openedFiles.isEmpty()) {
-					JOptionPane.showMessageDialog(null,
-							"DICT There are no files to scan");
+					JOptionPane.showMessageDialog(null, "DICT There are no files to scan");
 				} else {
-
 					for (int i = 0; i < openedFiles.size(); i++) {
-						analyzedFileIndex = i;
-						selectFileAt(analyzedFileIndex);
-						File imageFile = openedFiles.get(analyzedFileIndex);
+						selectFileAt(i);
+						File imageFile = openedFiles.get(i);
 
-						filledForm = new OMRModel(imageFile, omrContext.formTemplate);
-						// TODO Why is filledForm global?
+						OMRModel filledForm = new OMRModel(imageFile, omrContext.formTemplate);
 						filledForm.findCorners(threshold, density);
 						filledForm.findPoints(threshold, density, shapeSize);
 						omrContext.filledForms.put(imageFile.getName(), filledForm);
 					}
 
-
-					// TODO HELP!
-					// Move the functions getResults and getHeader to appropriate locations
-					// Make ResultsGridFrame work, or delete it and tranform output into a table
 					List<String> header = Arrays.asList(omrContext.getTemplate().getHeader());
 					List<Map<String, String>> results = getResults(omrContext.filledForms);
 					UIResultTableModel tbmResult = new UIResultTableModel(header, results);
 					tblResult.setModel(tbmResult);
-					/* tblResult.append(header.toString());
-					tblResult.append("\n");
-					tblResult.append(results.toString());
-					tblResult.append("\n"); */
-
-					resetFirstPass();
 				}
 			} catch (IOException e1) {
 				new ErrorDialog(e1).setVisible(true);
 			} catch (UnsupportedImageException e1) {
 				// TODO: Add dictionary entries
-				JOptionPane.showMessageDialog(null, Dictionary
-						.translate("DICT error.unsupported.image.type"),
-						Dictionary.translate("DICT 	error.popup.title"),
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, Dictionary.translate("DICT error.unsupported.image.type"),
+						Dictionary.translate("DICT 	error.popup.title"), JOptionPane.ERROR_MESSAGE);
 			}
-		}
-	};
-
-	/** */
-	public final ActionListener actAnalyzeFilesFirst = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			int threshold = Integer.valueOf(omrContext.getSettings().get(Setting.Threshold));
-			int density = Integer.valueOf(omrContext.getSettings().get(Setting.Density));
-			int shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
-
-			try {
-				if (openedFiles.isEmpty()) {
-					JOptionPane.showMessageDialog(null,
-							"DICT There are no files to scan");
-				} else {
-					if (firstPass) {
-						analyzedFileIndex = getSelectedItemIndex();
-						firstPass = false;
-					} else {
-						analyzedFileIndex++;
-					}
-
-					if (openedFiles.size() > analyzedFileIndex) {
-						selectFileAt(analyzedFileIndex);
-						File imageFile = openedFiles.get(analyzedFileIndex);
-
-						filledForm = new OMRModel(imageFile, omrContext.formTemplate);
-						filledForm.findCorners(threshold, density);
-						filledForm.findPoints(threshold, density, shapeSize);
-						// points = filledForm.getFieldPoints();
-						omrContext.filledForms.put(imageFile.getName(), filledForm);
-
-						// view.createFormImageFrame(filledForm.getImage(),
-						// filledForm, ImageFrame.Mode.MODIFY_POINTS);
-						// ImageFrame(model, image, template, mode,
-						// null);
-						uiView = new UIFormView(omrContext, null);
-						uiView.revalidate();
-						uiView.repaint();
-						//createResultsGridFrame(filledForm);
-
-					} else {
-						resetFirstPass();
-					}
-				}
-			} catch (IOException e1) {
-				new ErrorDialog(e1).setVisible(true);
-			} catch (UnsupportedImageException e1) {
-				JOptionPane.showMessageDialog(null, Dictionary
-						.translate("DICT error.unsupported.image.type"),
-						Dictionary.translate("DICT error.popup.title"),
-						JOptionPane.ERROR_MESSAGE);
-			}
-		}
-	};
-	/** */
-	public final ActionListener actAnalyzeFilesCurrent = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			int threshold = Integer.valueOf(omrContext.getSettings().get(Setting.Threshold));
-			int density = Integer.valueOf(omrContext.getSettings().get(Setting.Density));
-			int shapeSize = Integer.valueOf(omrContext.getSettings().get(Setting.ShapeSize));
-
-			selectFileAt(analyzedFileIndex);
-			File imageFile = openedFiles.get(analyzedFileIndex);
-			filledForm = omrContext.getTemplate();
-			filledForm.clearPoints();
-			filledForm.findPoints(threshold, density, shapeSize);
-			// points = filledForm.getFieldPoints();
-			omrContext.filledForms.put(imageFile.getName(), filledForm);
-			uiView.repaint();
-			//createResultsGridFrame(filledForm);
 		}
 	};
 
@@ -177,10 +84,8 @@ public class UIScan extends JPanel {
 	public final ActionListener actOpenImages = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// model.openImages();
 			omrContext.filledForms.clear();
 			openedFiles.clear();
-			omrContext.firstPass = true;
 
 			UIFileChooser flc = new UIFileChooser();
 			flc.setMultiSelectionEnabled(true);
@@ -204,8 +109,8 @@ public class UIScan extends JPanel {
 	};
 
 	/**
-	 * This private inner class is a custom ListModel which relies on
-	 * information contained on OMRModelContext (which files are open).
+	 * This private inner class is a custom ListModel which relies on information
+	 * contained on OMRModelContext (which files are open).
 	 */
 	private class FileListModel extends AbstractListModel<File> {
 		private static final long serialVersionUID = 1L;
@@ -242,44 +147,28 @@ public class UIScan extends JPanel {
 		JButton btnClear = new JButton("Clear list");
 		btnClear.addActionListener(actClearList);
 
-		JButton btnStart = new JButton();
-		btnStart.addActionListener(actAnalyzeFilesFirst);
-		btnStart.setIcon(Resources.getIcon(Icons.ANALYZE_FILES_ICON));
-		btnStart.setToolTipText(Dictionary.translate("analyze.files.tooltip"));
-
 		JButton btnStartAll = new JButton();
 		btnStartAll.addActionListener(actAnalyzeFilesAll);
-		btnStartAll.setIcon(Resources
-				.getIcon(Icons.ANALYZE_FILES_ALL_ICON));
-		btnStartAll.setToolTipText(Dictionary
-				.translate("analyze.files.all.tooltip"));
-
-		JButton btnReload = new JButton();
-		btnReload.addActionListener(actAnalyzeFilesCurrent);
-		btnReload.setIcon(Resources
-				.getIcon(Icons.ANALYZE_FILES_CURRENT_ICON));
-		btnReload.setToolTipText(Dictionary
-				.translate("analyze.files.current.tooltip"));
+		btnStartAll.setIcon(Resources.getIcon(Icons.ANALYZE_FILES_ALL_ICON));
+		btnStartAll.setToolTipText(Dictionary.translate("analyze.files.all.tooltip"));
 
 		pnlOptions.add(btnOpen);
 		pnlOptions.add(btnClear);
 		pnlOptions.add(btnStartAll);
-		pnlOptions.add(btnStart);
-		pnlOptions.add(btnReload);
 
 		this.lsmFiles = new FileListModel();
 		this.lstFiles = new JList<File>(lsmFiles);
 		this.lstFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.scrollPane = new JScrollPane(lstFiles);
 		this.uiView = new UIFormView(omrContext, null);
 
 		List<String> header = Arrays.asList(omrContext.getTemplate().getHeader());
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		this.tblResult = new JTable();
 		this.tblResult.setModel(new UIResultTableModel(header, results));
+		this.tblResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		add(pnlOptions, BorderLayout.NORTH);
-		add(this.scrollPane, BorderLayout.WEST);
+		add(new JScrollPane(lstFiles), BorderLayout.WEST);
 		add(this.uiView, BorderLayout.CENTER);
 		add(new JScrollPane(this.tblResult), BorderLayout.SOUTH);
 	}
@@ -305,13 +194,9 @@ public class UIScan extends JPanel {
 		lsmFiles.update();
 	}
 
-	public void resetFirstPass() {
-		firstPass = true;
-	}
-
 	public List<Map<String, String>> getResults(Map<String, OMRModel> filledForms) {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-		
+
 		for (Entry<String, OMRModel> filledForm : filledForms.entrySet()) {
 			OMRModel form = filledForm.getValue();
 			List<FormField> fields = form.getFields();
@@ -322,7 +207,7 @@ public class UIScan extends JPanel {
 			for (FormField field : fields) {
 				result.put(field.getName(), field.getValues());
 			}
-			
+
 			results.add(result);
 		}
 		return results;

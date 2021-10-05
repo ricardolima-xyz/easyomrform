@@ -11,7 +11,6 @@ public class Icons {
 	
 	public static final String OPEN_IMAGES_ICON = "folder-page.png";
 	public static final String SAVE_RESULTS_ICON = "page-save.png";
-	public static final String ANALYZE_FILES_ICON = "control-play-blue.png";
 	public static final String REMOVE_FIELD_BUTTON = "delete.png";
 	public static final String ADD_FIELD_BUTTON = "add.png";
 	public static final String DISABLED_BUTTON = "bullet-green.png";

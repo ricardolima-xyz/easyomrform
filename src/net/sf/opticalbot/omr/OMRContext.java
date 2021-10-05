@@ -11,7 +11,6 @@ import net.sf.opticalbot.ui.UIFormView;
 public class OMRContext {
 
 	public HashMap<String, OMRModel> filledForms = new HashMap<String, OMRModel>();
-	public boolean firstPass = true; // TODO whatis this?
 	public OMRModel formTemplate;
 
 	private final Settings settings;
@@ -51,15 +50,6 @@ public class OMRContext {
 		view.clearTemporaryPoint();
 	}
 
-	// // TODO: what does it do?
-	// public OMRModel getFilledForm() {
-	// return filledForm;
-	// }
-
-//	public Dimension getDesktopSize() {
-//		return view.getDesktopSize();
-//	}
-
 	public Settings getSettings() {
 		return settings;
 	}
@@ -68,17 +58,9 @@ public class OMRContext {
 		return formTemplate;
 	}
 
-	// public void resetFirstPass() {
-	// firstPass = true;
-	// }
-
 	public void setTemplate(OMRModel formTemplate) {
 		this.formTemplate = formTemplate;
 	}
-
-//	public void setView(UIMain view) {
-//		this.view = view;
-//	}
 
 	public void updateTemplate(List<FormField> fields) {
 		formTemplate.setFields(fields);
