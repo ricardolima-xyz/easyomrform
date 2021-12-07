@@ -1,7 +1,7 @@
 about.author=Autor: 
 about.tab.about=Sobre
 about.tab.license=Licença
-about.text=EasyOMRForm é um software gratuito para reconhecimento óptico de marcaçõs (OMR).<br>Visite o <a href=\"https://github.com/ricardolima-xyz/opticalbot\">site do projeto</a> para obter mais informações sobre o software.
+about.text=EasyOMRForm é um software gratuito para reconhecimento óptico de marcaçõs (OMR).<br>Visite o <a href=\"https://github.com/ricardolima-xyz/easyomrform\">site do projeto</a> para obter mais informações sobre o software.
 about.title=Sobre
 about.version=Versão: 
 about=Sobre
