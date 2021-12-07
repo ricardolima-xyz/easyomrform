@@ -1,7 +1,7 @@
 about.author=Author: 
 about.tab.about=About
 about.tab.license=License
-about.text=Opticalbot is a free software for Optical Mark Recognition (OMR).<br>Visit <a href=\"https://github.com/ricardolima-xyz/opticalbot\">project web site</a> for more information about the software.
+about.text=EasyOMRForm is a free software for Optical Mark Recognition (OMR).<br>Visit <a href=\"https://github.com/ricardolima-xyz/opticalbot\">project web site</a> for more information about the software.
 about.title=About
 about.version=Version: 
 about=About

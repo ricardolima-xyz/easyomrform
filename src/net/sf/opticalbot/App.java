@@ -12,9 +12,9 @@ import net.sf.opticalbot.ui.utilities.ErrorDialog;
 
 public class App {
 
-	public static String appName = "Opticalbot";
+	public static String appName = "EasyOMRForm";
 	public static String appVersion = "0.9";
-	public static String appWebSite = "https://github.com/ricardolima-xyz/opticalbot";
+	public static String appWebSite = "https://github.com/ricardolima-xyz/easyomrform";
 
 	/**
 	 * Launches the application.
